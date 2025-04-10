@@ -10,7 +10,7 @@ jobs:
   track_points:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -19,7 +19,9 @@ jobs:
           python-version: '3.10'
 
       - name: Simulate GitHub Event
-        run: echo '${{ toJson(github.event) }}' > event.json
+        run: |
+          echo '${{ toJson(github.event) }}' > event.json
+          cat event.json
 
       - name: Run Point Tracker
         run: |
@@ -32,13 +34,9 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
 
-      - name: Stage and commit updated points.json
+      - name: Commit and Push Updated Points
         run: |
           git add points.json
-          git commit -m "Update points.json" || echo "No changes to commit"
-
-      - name: Pull latest from main (rebase safely)
-        run: git pull origin main --rebase || echo "No rebase needed"
-
-      - name: Push changes to main
-        run: git push origin HEAD:main || echo "No changes to push"
+          git commit -m "🔁 Auto-update points.json" || echo "No changes to commit"
+          git pull origin main --rebase || echo "No need to rebase"
+          git push origin HEAD:main || echo "No changes to push"
