@@ -2,4 +2,4 @@
 
 | Rank | Username | Points |
 |------|----------|--------|
-| 1 | utkarsh-chauhannn | 20 |
+| 1 | utkarsh-chauhannn | 25 |
