@@ -9,12 +9,15 @@ EVENT_POINTS = {
     "pull_request": 10,
     "issues": 7,
     "issue_comment": 3
-   
 }
 
 def load_event(file_path):
-    with open(file_path, "r") as f:
-        return json.load(f)
+    try:
+        with open(file_path, "r") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Failed to load event file: {e}")
+        sys.exit(1)
 
 def load_points():
     if os.path.exists(POINTS_FILE):
@@ -27,10 +30,14 @@ def save_points(data):
         json.dump(data, f, indent=2)
 
 def get_actor_username(event):
-    return event.get("sender", {}).get("login", "unknown")
+    username = event.get("sender", {}).get("login", "unknown")
+    print(f"👤 Actor username: {username}")
+    return username
 
 def get_event_type():
-    return os.getenv("GITHUB_EVENT_NAME", "unknown")
+    event_type = os.getenv("GITHUB_EVENT_NAME", "unknown")
+    print(f"📦 GitHub Event Type: {event_type}")
+    return event_type
 
 def main():
     if len(sys.argv) != 2:
@@ -42,26 +49,19 @@ def main():
     event_type = get_event_type()
     username = get_actor_username(event_data)
 
-    # Debug output to understand the event during testing
-    print("DEBUG EVENT TYPE:", event_type)
-    print("DEBUG USERNAME:", username)
-    print("DEBUG RAW EVENT DATA:")
-    print(json.dumps(event_data, indent=2))
-
     if username == "unknown":
-        print(" Could not determine username. Exiting.")
+        print("❌ Could not determine username. Exiting.")
         sys.exit(1)
 
     points = load_points()
     current_points = points.get(username, 0)
     earned = EVENT_POINTS.get(event_type, 0)
 
-    if earned == 0:
-        print(f" No points configured for event type '{event_type}'")
-    else:
-        points[username] = current_points + earned
-        print(f" {username} earned {earned} points for {event_type} — total: {points[username]}")
-        save_points(points)
+    print(f"✨ {username} earned {earned} points for {event_type}")
+    points[username] = current_points + earned
+
+    save_points(points)
+    print(f"✅ Updated total: {points[username]}")
 
 if __name__ == "__main__":
     main()
