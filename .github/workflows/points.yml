@@ -1,0 +1,46 @@
+name: Points Tracker
+
+on:
+  push:
+  pull_request:
+  issues:
+  issue_comment:
+  pull_request_review:
+
+jobs:
+  track_points:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Simulate GitHub Event
+        run: |
+          printf '%s' '${{ toJson(github.event) }}' > event.json
+
+      - name: Run Point Tracker
+        run: |
+          python3 scripts/update_points.py event.json
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+      - name: Stage and commit updated points.json
+        run: |
+          git add points.json
+          git commit -m "Update points.json" || echo "No changes to commit"
+
+      - name: Pull latest from main
+        run: git pull origin main --rebase
+
+      - name: Push changes to main
+        run: git push origin HEAD:main || echo "No changes to push"
