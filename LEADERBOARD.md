@@ -2,5 +2,5 @@
 
 | Rank | Username | Points |
 |------|----------|--------|
-| 1 | utkarsh-chauhannn | 20 |
+| 1 | utkarsh-chauhannn | 25 |
 | 2 | AryanSachan12 | 5 |
