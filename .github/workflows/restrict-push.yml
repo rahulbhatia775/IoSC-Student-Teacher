@@ -1,0 +1,21 @@
+# .github/workflows/restrict-push.yml
+on:
+    push:
+      branches:
+        - '**'
+  
+  jobs:
+    restrict-branch:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Block if pushing to someone else's branch
+          run: |
+            if [[ "${GITHUB_REF##*/}" != *"${GITHUB_ACTOR}"* ]]; then
+              echo "🚫 You can only push to branches with your GitHub username in them."
+              echo "Branch: ${GITHUB_REF##*/}"
+              echo "User: ${GITHUB_ACTOR}"
+              exit 1
+            else
+              echo "✅ Push allowed to branch ${GITHUB_REF##*/}"
+            fi
+  
