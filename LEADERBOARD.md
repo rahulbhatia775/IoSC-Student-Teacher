@@ -2,6 +2,6 @@
 
 | Rank | Username | Points |
 |------|----------|--------|
-| 1 | utkarsh-chauhannn | 45 |
+| 1 | utkarsh-chauhannn | 50 |
 | 2 | AryanSachan12 | 25 |
 | 3 | IoscEdc | 5 |
