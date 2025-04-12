@@ -36,7 +36,7 @@ The **School Management System** is a full-stack web application that centralize
 ## 🛠️ Getting Started
 
 ```bash
-git clone https://github.com/Yogndrr/MERN-School-Management-System.git
+git clone https://github.com/IoscEdc/IoSC-Student-Teacher.git
 ```
 
 Open **two terminals** in separate tabs/windows:
