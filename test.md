@@ -1,1 +1,1 @@
-Test Bot
+bot test
