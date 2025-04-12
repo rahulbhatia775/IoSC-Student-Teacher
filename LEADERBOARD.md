@@ -3,4 +3,4 @@
 | Rank | Username | Points |
 |------|----------|--------|
 | 1 | utkarsh-chauhannn | 40 |
-| 2 | AryanSachan12 | 15 |
+| 2 | AryanSachan12 | 25 |
