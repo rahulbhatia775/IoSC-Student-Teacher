@@ -4,3 +4,4 @@
 |------|----------|--------|
 | 1 | utkarsh-chauhannn | 40 |
 | 2 | AryanSachan12 | 25 |
+| 3 | IoscEdc | 5 |
