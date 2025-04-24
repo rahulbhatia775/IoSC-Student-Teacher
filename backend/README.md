@@ -26,6 +26,11 @@ MONGO_URL=mongodb://127.0.0.1/school
 > ❗ **Important:** Do not include spaces around the `=` sign.
 
 ---
+### ⚙️ Prerequisite: Install MongoDB
+Follow the official guide to install MongoDB Community Edition on your OS:
+https://docs.mongodb.com/manual/installation/
+
+---
 
 ### 3️⃣ Start MongoDB Locally
 
@@ -40,9 +45,6 @@ mongod --dbpath C:\data\db
 > Make sure the path exists. You can create it if it doesn’t:
 ```bash
 mkdir C:\data\db
-```
-
-Sure! Here's the updated section with your phrasing included, keeping it clean and user-friendly:
 
 ---
 
