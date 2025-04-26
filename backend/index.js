@@ -1,3 +1,9 @@
+require('dotenv').config();
+const chatbotRoutes = require('./routes/chatbot');
+app.use('/api/chat', chatbotRoutes);
+
+
+
 const express = require("express")
 const cors = require("cors")
 const mongoose = require("mongoose")
