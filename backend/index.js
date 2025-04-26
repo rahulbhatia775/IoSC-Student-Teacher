@@ -1,8 +1,4 @@
 require('dotenv').config();
-const chatbotRoutes = require('./routes/chatbot');
-app.use('/api/chat', chatbotRoutes);
-
-
 
 const express = require("express")
 const cors = require("cors")
@@ -11,6 +7,8 @@ const dotenv = require("dotenv")
 // const bodyParser = require("body-parser")
 const app = express()
 const Routes = require("./routes/route.js")
+const chatbotRoutes = require('./routes/chatbot');
+app.use('/api/chat', chatbotRoutes);
 
 const PORT = process.env.PORT || 5000
 
