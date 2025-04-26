@@ -4,7 +4,7 @@
 |------|----------|--------|
 | 1 | utkarsh-chauhannn | 50 |
 | 2 | AryanSachan12 | 25 |
-| 3 | prefierolasoledad | 10 |
-| 4 | IoscEdc | 5 |
-| 5 | coderabbitai[bot] | 3 |
+| 3 | prefierolasoledad | 15 |
+| 4 | coderabbitai[bot] | 9 |
+| 5 | IoscEdc | 5 |
 | 6 | SRUTHIAGARWAL | 3 |

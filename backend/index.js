@@ -1,3 +1,7 @@
+const feedbackRoutes = require('./routes/feedback');
+app.use('/api/feedback', feedbackRoutes);
+
+
 require('dotenv').config();
 
 const express = require("express")
