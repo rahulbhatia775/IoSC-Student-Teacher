@@ -1,7 +1,4 @@
 const feedbackRoutes = require('./routes/feedback');
-app.use('/api/feedback', feedbackRoutes);
-
-
 require('dotenv').config();
 
 const express = require("express")
@@ -12,6 +9,7 @@ const dotenv = require("dotenv")
 const app = express()
 const Routes = require("./routes/route.js")
 const chatbotRoutes = require('./routes/chatbot');
+app.use('/api/feedback', feedbackRoutes);
 app.use('/api/chat', chatbotRoutes);
 
 const PORT = process.env.PORT || 5000
