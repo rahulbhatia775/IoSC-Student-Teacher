@@ -24,6 +24,7 @@ const {
     removeStudentAttendance } = require('../controllers/student_controller.js');
 const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, deleteSubject, freeSubjectList, allSubjects, deleteSubjects } = require('../controllers/subject-controller.js');
 const { teacherRegister, teacherLogIn, getTeachers, getTeacherDetail, deleteTeachers, deleteTeachersByClass, deleteTeacher, updateTeacherSubject, teacherAttendance } = require('../controllers/teacher-controller.js');
+const { getTimeTable , putTimeTable , getBatch , postBatch , deleteBatch , getCalendar , postCalendar , putCalendar , deleteCalendar } = require('../controllers/timetable-controller.js');
 
 // Admin
 router.post('/AdminReg', adminRegister);
@@ -103,8 +104,20 @@ router.get("/Sclass/Students/:id", getSclassStudents)
 router.delete("/Sclasses/:id", deleteSclasses)
 router.delete("/Sclass/:id", deleteSclass)
 
-// Subject
+// TimeTable
+router.get('/TimeTable/:batch', getTimeTable);
+router.put('/TimeTable/:batch', putTimeTable);
+router.get('/batches' ,getBatch);
+router.post('/batches' , postBatch);
+router.delete('/batches/:batch' , deleteBatch);
 
+// Calendar
+router.get('/Calender' , getCalendar)
+router.post('/Calender' , postCalendar)
+router.put('/Calender' , putCalendar);
+router.delete('/Calender/:id' , deleteCalendar)
+
+// Subject
 router.post('/SubjectCreate', subjectCreate);
 
 router.get('/AllSubjects/:id', allSubjects);
