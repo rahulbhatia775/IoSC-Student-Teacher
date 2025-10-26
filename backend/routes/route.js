@@ -10,6 +10,8 @@ const { noticeCreate, noticeList, deleteNotices, deleteNotice, updateNotice } = 
 const {
     studentRegister,
     studentLogIn,
+    forgotPassword,
+    resetPassword,
     getStudents,
     getStudentDetail,
     deleteStudents,
@@ -41,6 +43,10 @@ router.post('/StudentLogin', studentLogIn)
 
 router.get("/Students/:id", getStudents)
 router.get("/Student/:id", getStudentDetail)
+// Student Forgot & Reset Password
+router.post('/StudentForgotPassword', forgotPassword); // send reset email
+router.put('/StudentResetPassword/:token', resetPassword); // reset password using token
+
 
 router.delete("/Students/:id", deleteStudents)
 router.delete("/StudentsClass/:id", deleteStudentsByClass)
