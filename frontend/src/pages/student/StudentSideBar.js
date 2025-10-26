@@ -8,6 +8,8 @@ import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined
 import AnnouncementOutlinedIcon from '@mui/icons-material/AnnouncementOutlined';
 import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 
 const StudentSideBar = () => {
     const location = useLocation();
@@ -26,11 +28,23 @@ const StudentSideBar = () => {
                     </ListItemIcon>
                     <ListItemText primary="Subjects" />
                 </ListItemButton>
+                <ListItemButton component={Link} to="/Student/timetable">
+                    <ListItemIcon>
+                        <CalendarMonthIcon color={location.pathname.startsWith("/Student/timetable") ? 'primary' : 'inherit'} />
+                    </ListItemIcon>
+                    <ListItemText primary="TimeTable" />
+                </ListItemButton>
                 <ListItemButton component={Link} to="/Student/attendance">
                     <ListItemIcon>
                         <ClassOutlinedIcon color={location.pathname.startsWith("/Student/attendance") ? 'primary' : 'inherit'} />
                     </ListItemIcon>
                     <ListItemText primary="Attendance" />
+                </ListItemButton>
+                <ListItemButton component={Link} to="/Student/calender">
+                    <ListItemIcon>
+                        <EventAvailableIcon color={location.pathname.startsWith("/Student/calender") ? 'primary' : 'inherit'} />
+                    </ListItemIcon>
+                    <ListItemText primary="Year Calender" />
                 </ListItemButton>
                 <ListItemButton component={Link} to="/Student/complain">
                     <ListItemIcon>
