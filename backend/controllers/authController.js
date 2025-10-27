@@ -1,10 +1,10 @@
-import User from "../models/User.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
+const User= require("../models/User.js");
+const bcrypt= require("bcryptjs");
+const jwt= require("jsonwebtoken");
+const dotenv= require("dotenv");
 dotenv.config();
 
-export const register = async (req, res) => {
+const register = async (req, res) => {
   try {
     const { name, email, password, role, department } = req.body;
     if (!name || !email || !password) return res.status(400).json({ message: "Missing fields" });
@@ -22,8 +22,9 @@ export const register = async (req, res) => {
   }
 };
 
-export const login = async (req, res) => {
+const login = async (req, res) => {
   try {
+    console.log("Login attempt:", req.body);
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
@@ -38,3 +39,4 @@ export const login = async (req, res) => {
   }
 };
 
+module.exports = { register, login };

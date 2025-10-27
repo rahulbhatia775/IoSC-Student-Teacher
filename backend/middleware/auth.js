@@ -1,9 +1,9 @@
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-import User from "../models/User.js";
+const jwt =require("jsonwebtoken");
+const dotenv= require("dotenv");
+const User= require("../models/User.js");
 dotenv.config();
 
-export const authMiddleware = async (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   const token = req.header("Authorization")?.replace("Bearer ", "") || req.query.token;
   if (!token) return res.status(401).json({ message: "No token provided" });
 
@@ -18,8 +18,10 @@ export const authMiddleware = async (req, res, next) => {
   }
 };
 
-export const authorizeRoles = (...roles) => (req, res, next) => {
+const authorizeRoles = (...roles) => (req, res, next) => {
   if (!req.user) return res.status(401).json({ message: "Not authenticated" });
   if (!roles.includes(req.user.role)) return res.status(403).json({ message: "Forbidden" });
   next();
 };
+
+module.exports = { authMiddleware, authorizeRoles };

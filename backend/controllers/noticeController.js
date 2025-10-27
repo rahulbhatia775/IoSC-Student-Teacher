@@ -1,8 +1,8 @@
-import Notice from "../models/Notice.js";
-import fs from "fs";
-import { uploadFileToDrive, makeFilePublic } from "../utils/driveHelper.js";
+const Notice = require("../models/Notice.js");
+const fs =require( "fs");
+const { uploadFileToDrive, makeFilePublic }= require("../utils/driveHelper.js");
 
-export const createNotice = async (req, res) => {
+const createNotice = async (req, res) => {
   try {
     const file = req.file;
     const { title, description, department } = req.body;
@@ -40,7 +40,7 @@ export const createNotice = async (req, res) => {
   }
 };
 
-export const listNotices = async (req, res) => {
+const listNotices = async (req, res) => {
   try {
     const filter = {};
     if (req.query.department) filter.department = req.query.department;
@@ -50,3 +50,5 @@ export const listNotices = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+module.exports = { createNotice, listNotices };
