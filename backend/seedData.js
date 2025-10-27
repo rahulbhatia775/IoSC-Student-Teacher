@@ -17,8 +17,7 @@ const connectDB = async () => {
 
 const seedStudents = async () => {
     try {
-        // Clear existing students (optional)
-        // await Student.deleteMany({});
+
 
         const students = [
             {
@@ -80,8 +79,7 @@ const seedStudents = async () => {
 
 const seedTeachers = async () => {
     try {
-        // Clear existing teachers (optional)
-        // await Teacher.deleteMany({});
+
 
         const teachers = [
             {
@@ -183,9 +181,9 @@ const seedAdmins = async () => {
 
 const seedNotices = async () => {
     try {
-        // Get teachers for notice creation
+
         const teachers = await Teacher.find().limit(3);
-        
+
         if (teachers.length === 0) {
             console.log('No teachers found for notice seeding');
             return;
@@ -246,19 +244,19 @@ const seedNotices = async () => {
 
 const seedData = async () => {
     await connectDB();
-    
+
     console.log('Seeding students...');
     await seedStudents();
-    
+
     console.log('Seeding teachers...');
     await seedTeachers();
-    
+
     console.log('Seeding admins...');
     await seedAdmins();
-    
+
     console.log('Seeding notices...');
     await seedNotices();
-    
+
     console.log('Seeding completed!');
     console.log('\nPredefined Login Credentials:');
     console.log('\n--- STUDENTS ---');
@@ -275,7 +273,7 @@ const seedData = async () => {
     console.log('Email: admin@school.com | Password: admin123');
     console.log('Email: superadmin@school.com | Password: superadmin123');
     console.log('Email: mayankbisht591@gmail.com | Password: 123456 (FOR TESTING FORGOT PASSWORD)');
-    
+
     mongoose.connection.close();
 };
 
