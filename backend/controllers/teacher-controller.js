@@ -274,10 +274,12 @@ const deleteTeacher = async (req, res) => {
     try {
         const deletedTeacher = await Teacher.findByIdAndDelete(req.params.id);
 
-        await Subject.updateOne(
-            { teacher: deletedTeacher._id, teacher: { $exists: true } },
-            { $unset: { teacher: 1 } }
-        );
+        if (deletedTeacher) {
+            await Subject.updateMany(
+                { teacher: deletedTeacher._id },
+                { $unset: { teacher: "" } }
+            );
+        }
 
         res.send(deletedTeacher);
     } catch (error) {
@@ -288,21 +290,17 @@ const deleteTeacher = async (req, res) => {
 // DELETE TEACHERS BY SCHOOL
 const deleteTeachers = async (req, res) => {
     try {
-        const deletionResult = await Teacher.deleteMany({ school: req.params.id });
-        const deletedCount = deletionResult.deletedCount || 0;
-
-        if (deletedCount === 0) {
+        const doomed = await Teacher.find({ school: req.params.id }).select('_id');
+        if (doomed.length === 0) {
             res.send({ message: "No teachers found to delete" });
             return;
         }
-
-        const deletedTeachers = await Teacher.find({ school: req.params.id });
-
+        const ids = doomed.map(t => t._id);
+        const deletionResult = await Teacher.deleteMany({ _id: { $in: ids } });
         await Subject.updateMany(
-            { teacher: { $in: deletedTeachers.map(teacher => teacher._id) }, teacher: { $exists: true } },
-            { $unset: { teacher: "" }, $unset: { teacher: null } }
+            { teacher: { $in: ids } },
+            { $unset: { teacher: "" } }
         );
-
         res.send(deletionResult);
     } catch (error) {
         res.status(500).json(error);
@@ -312,21 +310,17 @@ const deleteTeachers = async (req, res) => {
 // DELETE TEACHERS BY CLASS
 const deleteTeachersByClass = async (req, res) => {
     try {
-        const deletionResult = await Teacher.deleteMany({ sclassName: req.params.id });
-        const deletedCount = deletionResult.deletedCount || 0;
-
-        if (deletedCount === 0) {
+        const doomed = await Teacher.find({ sclassName: req.params.id }).select('_id');
+        if (doomed.length === 0) {
             res.send({ message: "No teachers found to delete" });
             return;
         }
-
-        const deletedTeachers = await Teacher.find({ sclassName: req.params.id });
-
+        const ids = doomed.map(t => t._id);
+        const deletionResult = await Teacher.deleteMany({ _id: { $in: ids } });
         await Subject.updateMany(
-            { teacher: { $in: deletedTeachers.map(teacher => teacher._id) }, teacher: { $exists: true } },
-            { $unset: { teacher: "" }, $unset: { teacher: null } }
+            { teacher: { $in: ids } },
+            { $unset: { teacher: "" } }
         );
-
         res.send(deletionResult);
     } catch (error) {
         res.status(500).json(error);
@@ -351,6 +345,7 @@ const teacherAttendance = async (req, res) => {
         }
 
         const result = await teacher.save();
+        if (result) result.password = undefined;
         return res.send(result);
     } catch (error) {
         res.status(500).json(error);

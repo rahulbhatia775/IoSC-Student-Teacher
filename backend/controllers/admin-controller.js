@@ -102,7 +102,7 @@ const adminLogIn = async (req, res) => {
             return res.status(400).json({ error: "Email and password are required" });
         }
 
-        const admin = await Admin.findOne({ email });
+        const admin = await Admin.findOne({ email }).select('+password');
         console.log('🔍 ADMIN LOGIN DEBUG - Admin found:', !!admin);
         
         if (!admin) {
@@ -171,7 +171,7 @@ const adminForgotPassword = async (req, res) => {
         const { email } = req.body;
         console.log('🔍 BACKEND DEBUG - Email extracted:', email);
         
-        const admin = await Admin.findOne({ email });
+        const admin = await Admin.findOne({ email }).select('+password');
         console.log('🔍 BACKEND DEBUG - Admin found:', !!admin);
         
         if (!admin) {
