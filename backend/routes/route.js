@@ -10,6 +10,8 @@ const { noticeCreate, noticeList, deleteNotices, deleteNotice, updateNotice } = 
 const {
     studentRegister,
     studentLogIn,
+    forgotPassword,
+    resetPassword,
     getStudents,
     getStudentDetail,
     deleteStudents,
@@ -21,7 +23,7 @@ const {
     clearAllStudentsAttendanceBySubject,
     clearAllStudentsAttendance,
     removeStudentAttendanceBySubject,
-    removeStudentAttendance } = require('../controllers/student_controller.js');
+    removeStudentAttendance } = require('../controllers/student-controller.js');
 const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, deleteSubject, freeSubjectList, allSubjects, deleteSubjects } = require('../controllers/subject-controller.js');
 const { teacherRegister, teacherLogIn, getTeachers, getTeacherDetail, deleteTeachers, deleteTeachersByClass, deleteTeacher, updateTeacherSubject, teacherAttendance } = require('../controllers/teacher-controller.js');
 const { getTimeTable , putTimeTable , getBatch , postBatch , deleteBatch , getCalendar , postCalendar , putCalendar , deleteCalendar } = require('../controllers/timetable-controller.js');
@@ -48,6 +50,10 @@ router.post('/StudentLogin', studentLogIn)
 
 router.get("/Students/:id", getStudents)
 router.get("/Student/:id", getStudentDetail)
+// Student Forgot & Reset Password
+router.post('/StudentForgotPassword', forgotPassword); // send reset email
+router.put('/StudentResetPassword/:token', resetPassword); // reset password using token
+
 
 router.delete("/Students/:id", deleteStudents)
 router.delete("/StudentsClass/:id", deleteStudentsByClass)
