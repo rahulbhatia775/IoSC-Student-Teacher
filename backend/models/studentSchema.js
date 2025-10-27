@@ -5,8 +5,8 @@ const crypto = require("crypto");
 const studentSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  school: { type: String, required: true },
-  sclassName: { type: String, required: true },
+  school: { type: mongoose.Schema.Types.Mixed, required: true },
+  sclassName: { type: mongoose.Schema.Types.Mixed, required: true },
   rollNum: { type: String, required: true },
   password: { type: String, required: true },
   role: { type: String, default: "Student" },

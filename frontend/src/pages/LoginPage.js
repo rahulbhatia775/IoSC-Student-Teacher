@@ -1,307 +1,274 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Grid, Box, Typography, Paper, Checkbox, FormControlLabel, TextField, CssBaseline, IconButton, InputAdornment, CircularProgress, Backdrop } from '@mui/material';
+import {
+  Button,
+  Grid,
+  Box,
+  Typography,
+  Paper,
+  TextField,
+  CssBaseline,
+  IconButton,
+  InputAdornment,
+  CircularProgress,
+  Backdrop,
+  Modal
+} from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import bgpic from "../assets/designlogin.jpg"
-import { IndigoButton } from '../components/buttonStyles';
 import styled from 'styled-components';
+import bgpic from "../assets/designlogin.jpg";
+import { IndigoButton } from '../components/buttonStyles';
 import { loginUser } from '../redux/userRelated/userHandle';
 import Popup from '../components/Popup';
+import axios from 'axios';
+import api from '../api/axiosConfig';
 
 const defaultTheme = createTheme();
 
 const LoginPage = ({ role }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { status, currentUser, response, currentRole } = useSelector(state => state.user);
 
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
+  const [toggle, setToggle] = useState(false);
+  const [loader, setLoader] = useState(false);
+  const [guestLoader, setGuestLoader] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [message, setMessage] = useState("");
 
-    const { status, currentUser, response, error, currentRole } = useSelector(state => state.user);;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [loginError, setLoginError] = useState("");
 
-    const [toggle, setToggle] = useState(false)
-    const [guestLoader, setGuestLoader] = useState(false)
-    const [loader, setLoader] = useState(false)
-    const [showPopup, setShowPopup] = useState(false);
-    const [message, setMessage] = useState("");
+  // Forgot password state
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotModalOpen, setForgotModalOpen] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
 
-    const [emailError, setEmailError] = useState(false);
-    const [passwordError, setPasswordError] = useState(false);
-    const [rollNumberError, setRollNumberError] = useState(false);
-    const [studentNameError, setStudentNameError] = useState(false);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    let hasError = false;
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
+    if (!email) {
+      setEmailError(true);
+      hasError = true;
+    } else setEmailError(false);
 
-        if (role === "Student") {
-            const rollNum = event.target.rollNumber.value;
-            const studentName = event.target.studentName.value;
-            const password = event.target.password.value;
+    if (!password) {
+      setPasswordError(true);
+      hasError = true;
+    } else setPasswordError(false);
 
-            if (!rollNum || !studentName || !password) {
-                if (!rollNum) setRollNumberError(true);
-                if (!studentName) setStudentNameError(true);
-                if (!password) setPasswordError(true);
-                return;
-            }
-            const fields = { rollNum, studentName, password }
-            setLoader(true)
-            dispatch(loginUser(fields, role))
-        }
+    if (hasError) return;
 
-        else {
-            const email = event.target.email.value;
-            const password = event.target.password.value;
+    setLoader(true);
+    setLoginError("");
+    console.log('🔍 LOGINPAGE DEBUG - Calling loginUser with:', { email, password: '***', role });
+    dispatch(loginUser({ email, password, role }));
+  };
 
-            if (!email || !password) {
-                if (!email) setEmailError(true);
-                if (!password) setPasswordError(true);
-                return;
-            }
+  const guestModeHandler = () => {
+    const password = "zxc";
+    let fields = {};
+    if (role === "Admin") fields = { email: "yogendra@12", password, role };
+    else if (role === "Student") fields = { email: "student@demo.com", password, role };
+    else if (role === "Teacher") fields = { email: "tony@12", password, role };
+    setGuestLoader(true);
+    console.log('🔍 LOGINPAGE DEBUG - Guest login with:', { ...fields, password: '***' });
+    dispatch(loginUser(fields));
+  };
 
-            const fields = { email, password }
-            setLoader(true)
-            dispatch(loginUser(fields, role))
-        }
-    };
-
-    const handleInputChange = (event) => {
-        const { name } = event.target;
-        if (name === 'email') setEmailError(false);
-        if (name === 'password') setPasswordError(false);
-        if (name === 'rollNumber') setRollNumberError(false);
-        if (name === 'studentName') setStudentNameError(false);
-    };
-
-    const guestModeHandler = () => {
-        const password = "zxc"
-
-        if (role === "Admin") {
-            const email = "yogendra@12"
-            const fields = { email, password }
-            setGuestLoader(true)
-            dispatch(loginUser(fields, role))
-        }
-        else if (role === "Student") {
-            const rollNum = "1"
-            const studentName = "Dipesh Awasthi"
-            const fields = { rollNum, studentName, password }
-            setGuestLoader(true)
-            dispatch(loginUser(fields, role))
-        }
-        else if (role === "Teacher") {
-            const email = "tony@12"
-            const fields = { email, password }
-            setGuestLoader(true)
-            dispatch(loginUser(fields, role))
-        }
+  const handleForgotPassword = async () => {
+    console.log('🔍 FORGOT PASSWORD DEBUG - Step 1: Function called');
+    console.log('🔍 FORGOT PASSWORD DEBUG - Step 2: Email:', forgotEmail, 'Role:', role);
+    
+    if (!forgotEmail) {
+      console.log('🚨 FORGOT PASSWORD ERROR - No email provided');
+      return;
     }
+    
+    setForgotLoading(true);
+    try {
+      let endpoint = '/StudentForgotPassword';
+      if (role === 'Teacher') {
+        endpoint = '/TeacherForgotPassword';
+      } else if (role === 'Admin') {
+        endpoint = '/AdminForgotPassword';
+      }
+      
+      console.log('🔍 FORGOT PASSWORD DEBUG - Step 3: Using endpoint:', endpoint);
+      console.log('🔍 FORGOT PASSWORD DEBUG - Step 4: Sending request with email:', forgotEmail);
+      
+      const response = await api.post(endpoint, { email: forgotEmail });
+      
+      console.log('🔍 FORGOT PASSWORD DEBUG - Step 5: Response received:', response.data);
+      
+      setMessage("🎉 New password sent to your email! Check your inbox and login with the new password.");
+      setShowPopup(true);
+      setForgotModalOpen(false);
+      setForgotEmail("");
+      
+      console.log('🔍 FORGOT PASSWORD DEBUG - Step 6: Success - Modal closed and message shown');
+    } catch (err) {
+      console.error('🚨 FORGOT PASSWORD ERROR - Step 7: Error occurred:', err);
+      console.error('🚨 FORGOT PASSWORD ERROR - Error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status
+      });
+      
+      setMessage(err.response?.data?.error || "Failed to send reset email");
+      setShowPopup(true);
+    } finally {
+      setForgotLoading(false);
+      console.log('🔍 FORGOT PASSWORD DEBUG - Step 8: Loading state reset');
+    }
+  };
 
-    useEffect(() => {
-        if (status === 'success' || currentUser !== null) {
-            if (currentRole === 'Admin') {
-                navigate('/Admin/dashboard');
-            }
-            else if (currentRole === 'Student') {
-                navigate('/Student/dashboard');
-            } else if (currentRole === 'Teacher') {
-                navigate('/Teacher/dashboard');
-            }
-        }
-        else if (status === 'failed') {
-            setMessage(response)
-            setShowPopup(true)
-            setLoader(false)
-        }
-        else if (status === 'error') {
-            setMessage("Network Error")
-            setShowPopup(true)
-            setLoader(false)
-            setGuestLoader(false)
-        }
-    }, [status, currentRole, navigate, error, response, currentUser]);
+  useEffect(() => {
+    console.log('🔍 LOGINPAGE EFFECT - Status:', status, 'CurrentUser:', !!currentUser, 'CurrentRole:', currentRole);
+    
+    if (status === 'success' || currentUser !== null) {
+      console.log('🔍 LOGINPAGE EFFECT - Login successful, redirecting to success page');
+      setLoader(false);
+      setGuestLoader(false);
+      navigate('/login-success');
+    } else if (status === 'failed') {
+      console.log('🔍 LOGINPAGE EFFECT - Login failed:', response);
+      setLoginError(response || "Login failed");
+      setLoader(false);
+      setGuestLoader(false);
+    } else if (status === 'error') {
+      console.log('🔍 LOGINPAGE EFFECT - Login error occurred');
+      setLoginError("Network Error");
+      setLoader(false);
+      setGuestLoader(false);
+    }
+  }, [status, currentRole, navigate, response, currentUser]);
 
-    return (
-        <ThemeProvider theme={defaultTheme}>
-            <Grid container component="main" sx={{ height: '100vh' }}>
-                <CssBaseline />
-                <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                    <Box
-                        sx={{
-                            my: 8,
-                            mx: 4,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Typography variant="h4" sx={{ mb: 2, color: "#2c2143" }}>
-                            {role} Login
-                        </Typography>
-                        <Typography variant="h7">
-                            Welcome back! Please enter your details
-                        </Typography>
-                        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 2 }}>
-                            {role === "Student" ? (
-                                <>
-                                    <TextField
-                                        margin="normal"
-                                        required
-                                        fullWidth
-                                        id="rollNumber"
-                                        label="Enter your Roll Number"
-                                        name="rollNumber"
-                                        autoComplete="off"
-                                        type="number"
-                                        autoFocus
-                                        error={rollNumberError}
-                                        helperText={rollNumberError && 'Roll Number is required'}
-                                        onChange={handleInputChange}
-                                    />
-                                    <TextField
-                                        margin="normal"
-                                        required
-                                        fullWidth
-                                        id="studentName"
-                                        label="Enter your name"
-                                        name="studentName"
-                                        autoComplete="name"
-                                        autoFocus
-                                        error={studentNameError}
-                                        helperText={studentNameError && 'Name is required'}
-                                        onChange={handleInputChange}
-                                    />
-                                </>
-                            ) : (
-                                <TextField
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    id="email"
-                                    label="Enter your email"
-                                    name="email"
-                                    autoComplete="email"
-                                    autoFocus
-                                    error={emailError}
-                                    helperText={emailError && 'Email is required'}
-                                    onChange={handleInputChange}
-                                />
-                            )}
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                name="password"
-                                label="Password"
-                                type={toggle ? 'text' : 'password'}
-                                id="password"
-                                autoComplete="current-password"
-                                error={passwordError}
-                                helperText={passwordError && 'Password is required'}
-                                onChange={handleInputChange}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton onClick={() => setToggle(!toggle)}>
-                                                {toggle ? (
-                                                    <Visibility />
-                                                ) : (
-                                                    <VisibilityOff />
-                                                )}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                            <Grid container sx={{ display: "flex", justifyContent: "space-between" }}>
-                                <FormControlLabel
-                                    control={<Checkbox value="remember" color="primary" />}
-                                    label="Remember me"
-                                />
-                                <StyledLink href="#">
-                                    Forgot password?
-                                </StyledLink>
-                            </Grid>
-                            <IndigoButton
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3 }}
-                            >
-                                {loader ?
-                                    <CircularProgress size={24} color="inherit" />
-                                    : "Login"}
-                            </IndigoButton>
-                            <Button
-                                fullWidth
-                                onClick={guestModeHandler}
-                                variant="outlined"
-                                sx={{ mt: 2, mb: 3, color: "#1976d2", borderColor: "#1976d2" }}
-                            >
-                                Login as Guest
-                            </Button>
-                            {role === "Admin" &&
-                                <Grid container>
-                                    <Grid>
-                                        Don't have an account?
-                                    </Grid>
-                                    <Grid item sx={{ ml: 2 }}>
-                                        <StyledLink to="/Adminregister">
-                                            Sign up
-                                        </StyledLink>
-                                    </Grid>
-                                </Grid>
-                            }
-                        </Box>
-                    </Box>
-                </Grid>
-                <Grid
-                    item
-                    xs={false}
-                    sm={4}
-                    md={7}
-                    sx={{
-                        backgroundImage: `linear-gradient(rgba(25, 118, 210, 0.6), rgba(25, 118, 210, 0.6)), url(${bgpic})`,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundColor: '#1976d2', // fallback color
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#fff',
-                        textAlign: 'center',
-                        padding: 4,
-                    }}
-                    >
-                    <Box>
-                        <Typography variant="h4" fontWeight="bold" gutterBottom>
-                            Empowering Education
-                        </Typography>
-                        <Typography variant="subtitle1">
-                            "Managing today for a smarter tomorrow — where every student matters."
-                        </Typography>
-                    </Box>
+  return (
+    <ThemeProvider theme={defaultTheme}>
+      <Grid container component="main" sx={{ height: '100vh' }}>
+        <CssBaseline />
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          <Box sx={{ my: 8, mx: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Typography variant="h4" sx={{ mb: 2, color: "#2c2143" }}>{role} Login</Typography>
+            <Typography variant="h7">Welcome back! Please enter your details</Typography>
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 2 }}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Enter your email"
+                name="email"
+                autoComplete="email"
+                autoFocus
+                error={emailError || !!loginError}
+                helperText={emailError ? "Email is required" : ""}
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setEmailError(false); setLoginError(""); }}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type={toggle ? 'text' : 'password'}
+                id="password"
+                autoComplete="current-password"
+                error={passwordError || !!loginError}
+                helperText={passwordError ? "Password is required" : loginError}
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setPasswordError(false); setLoginError(""); }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setToggle(!toggle)}>
+                        {toggle ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Grid container sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Button variant="text" onClick={() => setForgotModalOpen(true)}>Forgot password?</Button>
+              </Grid>
+              <IndigoButton type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
+                {loader ? <CircularProgress size={24} color="inherit" /> : "Login"}
+              </IndigoButton>
+              <Button fullWidth onClick={guestModeHandler} variant="outlined" sx={{ mt: 2, mb: 3, color: "#1976d2", borderColor: "#1976d2" }}>Login as Guest</Button>
+            </Box>
+          </Box>
+        </Grid>
+        <Grid item xs={false} sm={4} md={7} sx={{
+          backgroundImage: `linear-gradient(rgba(25, 118, 210, 0.6), rgba(25, 118, 210, 0.6)), url(${bgpic})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundColor: '#1976d2',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          textAlign: 'center',
+          padding: 4
+        }}>
+          <Box>
+            <Typography variant="h4" fontWeight="bold" gutterBottom>Empowering Education</Typography>
+            <Typography variant="subtitle1">"Managing today for a smarter tomorrow — where every student matters."</Typography>
+          </Box>
+        </Grid>
+      </Grid>
 
-                </Grid>
+      {/* Forgot Password Modal */}
+      <Modal open={forgotModalOpen} onClose={() => setForgotModalOpen(false)}>
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 400,
+          bgcolor: 'background.paper',
+          borderRadius: 2,
+          p: 4
+        }}>
+          <Typography variant="h6" mb={2}>Forgot Password</Typography>
+          <TextField
+            fullWidth
+            label="Enter your email"
+            value={forgotEmail}
+            onChange={(e) => setForgotEmail(e.target.value)}
+          />
+          <Button
+            fullWidth
+            sx={{ mt: 2 }}
+            onClick={handleForgotPassword}
+            disabled={forgotLoading}
+          >
+            {forgotLoading ? <CircularProgress size={24} /> : "Send Reset Email"}
+          </Button>
+        </Box>
+      </Modal>
 
-            </Grid>
-            <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={guestLoader}
-            >
-                <CircularProgress color="primary" />
-                Please Wait
-            </Backdrop>
-            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-        </ThemeProvider>
-    );
-}
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={guestLoader}>
+        <CircularProgress color="primary" />
+        Please Wait
+      </Backdrop>
+      <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+    </ThemeProvider>
+  );
+};
 
-export default LoginPage
+export default LoginPage;
 
 const StyledLink = styled(Link)`
   margin-top: 9px;
   text-decoration: none;
-  color:rgb(49, 29, 205);
+  color: rgb(49, 29, 205);
 `;

@@ -31,7 +31,7 @@ const StudentComplain = () => {
     const submitHandler = (event) => {
         event.preventDefault()
         setLoader(true)
-        dispatch(addStuff(fields, address))
+        dispatch(addStuff({ fields, address }))
     };
 
     useEffect(() => {

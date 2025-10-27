@@ -8,6 +8,10 @@ import TeacherDashboard from './pages/teacher/TeacherDashboard';
 import LoginPage from './pages/LoginPage';
 import AdminRegisterPage from './pages/admin/AdminRegisterPage';
 import ChooseUser from './pages/ChooseUser';
+import StudentResetPassword from './pages/StudentResetPassword';
+import TeacherResetPassword from './pages/TeacherResetPassword';
+import LoginSuccess from './pages/LoginSuccess';
+import Logout from './pages/Logout';
 
 const App = () => {
   const { currentRole } = useSelector(state => state.user);
@@ -22,9 +26,16 @@ const App = () => {
 
           <Route path="/Adminlogin" element={<LoginPage role="Admin" />} />
           <Route path="/Studentlogin" element={<LoginPage role="Student" />} />
+          <Route path="/Student/login" element={<LoginPage role="Student" />} />
           <Route path="/Teacherlogin" element={<LoginPage role="Teacher" />} />
+          <Route path="/Teacher/login" element={<LoginPage role="Teacher" />} />
 
           <Route path="/Adminregister" element={<AdminRegisterPage />} />
+          
+          <Route path="/StudentResetPassword/:token" element={<StudentResetPassword />} />
+          <Route path="/TeacherResetPassword/:token" element={<TeacherResetPassword />} />
+          <Route path="/login-success" element={<LoginSuccess />} />
+          <Route path="/logout" element={<Logout />} />
 
           <Route path='*' element={<Navigate to="/" />} />
         </Routes>}

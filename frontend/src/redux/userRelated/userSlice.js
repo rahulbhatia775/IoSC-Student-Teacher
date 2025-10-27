@@ -81,6 +81,53 @@ const userSlice = createSlice({
             state.darkMode = !state.darkMode;
         }
     },
+    extraReducers: (builder) => {
+        // Handle addStuff async thunk
+        builder
+            .addCase('user/addStuff/pending', (state) => {
+                state.status = 'loading';
+                state.loading = true;
+            })
+            .addCase('user/addStuff/fulfilled', (state, action) => {
+                state.status = 'added';
+                state.loading = false;
+                state.tempDetails = action.payload;
+                state.error = null;
+                state.response = null;
+            })
+            .addCase('user/addStuff/rejected', (state, action) => {
+                state.status = 'failed';
+                state.loading = false;
+                state.error = action.payload;
+                state.response = action.payload;
+            })
+            // Handle getUserDetails async thunk
+            .addCase('user/getUserDetails/pending', (state) => {
+                state.loading = true;
+            })
+            .addCase('user/getUserDetails/fulfilled', (state, action) => {
+                state.loading = false;
+                state.userDetails = action.payload;
+                state.error = null;
+            })
+            .addCase('user/getUserDetails/rejected', (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // Handle updateUser async thunk
+            .addCase('user/updateUser/pending', (state) => {
+                state.loading = true;
+            })
+            .addCase('user/updateUser/fulfilled', (state, action) => {
+                state.loading = false;
+                state.currentUser = action.payload;
+                state.error = null;
+            })
+            .addCase('user/updateUser/rejected', (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+    }
 });
 
 export const {

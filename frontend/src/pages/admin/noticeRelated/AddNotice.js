@@ -1,53 +1,93 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { addStuff } from '../../../redux/userRelated/userHandle';
-import { underControl } from '../../../redux/userRelated/userSlice';
+import { useSelector } from 'react-redux';
 import {
   Box,
   Container,
   Typography,
   TextField,
-  Paper,
-  Alert
+  Paper
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import Popup from '../../../components/Popup';
+import api from '../../../api/axiosConfig';
 
 const AddNotice = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { status, error } = useSelector(state => state.user);
   const { currentUser } = useSelector(state => state.user);
 
   const [title, setTitle] = useState('');
   const [details, setDetails] = useState('');
+  const [priority, setPriority] = useState('medium');
   const [date, setDate] = useState('');
-  const adminID = currentUser._id;
 
   const [loader, setLoader] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState('');
 
-  const fields = { title, details, date, adminID };
-  const address = 'Notice';
-
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setLoader(true);
-    dispatch(addStuff(fields, address));
-  };
-
-  useEffect(() => {
-    if (status === 'added') {
-      navigate('/Admin/notices');
-      dispatch(underControl());
-    } else if (status === 'error') {
-      setMessage('Network Error');
+    
+    console.log('🔍 ADD NOTICE DEBUG - Starting submission');
+    console.log('🔍 ADD NOTICE DEBUG - Current User:', currentUser);
+    console.log('🔍 ADD NOTICE DEBUG - Token in localStorage:', localStorage.getItem('token'));
+    
+    if (!currentUser) {
+      setMessage('Please login first');
       setShowPopup(true);
+      return;
+    }
+    
+    if (!title.trim() || !details.trim() || !date) {
+      setMessage('Please fill all required fields');
+      setShowPopup(true);
+      return;
+    }
+    
+    setLoader(true);
+    
+    try {
+      const noticeData = {
+        title: title.trim(),
+        details: details.trim(),
+        priority,
+        date,
+        school: currentUser._id
+      };
+      
+      console.log('🔍 ADD NOTICE DEBUG - Sending data:', noticeData);
+      
+      const response = await api.post('/NoticeCreate', noticeData);
+      
+      console.log('🔍 ADD NOTICE DEBUG - Response received:', response.data);
+      
+      if (response.data.success) {
+        setMessage('Notice added successfully!');
+        setShowPopup(true);
+        
+        // Reset form
+        setTitle('');
+        setDetails('');
+        setPriority('medium');
+        setDate('');
+        
+        // Navigate after showing success message
+        setTimeout(() => {
+          navigate('/Admin/notices');
+        }, 2000);
+      } else {
+        setMessage('Failed to add notice: ' + (response.data.error || 'Unknown error'));
+        setShowPopup(true);
+      }
+    } catch (error) {
+      console.error('🚨 ADD NOTICE ERROR:', error);
+      const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Network error';
+      setMessage('Error: ' + errorMessage);
+      setShowPopup(true);
+    } finally {
       setLoader(false);
     }
-  }, [status, navigate, dispatch]);
+  };
 
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
@@ -81,6 +121,20 @@ const AddNotice = () => {
             onChange={(e) => setDetails(e.target.value)}
           />
           <TextField
+            label="Priority"
+            select
+            fullWidth
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+            SelectProps={{
+              native: true,
+            }}
+          >
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </TextField>
+          <TextField
             label="Date"
             type="date"
             fullWidth
@@ -104,11 +158,7 @@ const AddNotice = () => {
         </Box>
       </Paper>
 
-      {error && (
-        <Alert severity="error" sx={{ mt: 2 }}>
-          Something went wrong!
-        </Alert>
-      )}
+
 
       <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
     </Container>

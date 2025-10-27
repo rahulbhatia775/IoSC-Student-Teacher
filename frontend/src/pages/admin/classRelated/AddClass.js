@@ -33,7 +33,7 @@ const AddClass = () => {
     const submitHandler = (event) => {
         event.preventDefault()
         setLoader(true)
-        dispatch(addStuff(fields, address))
+        dispatch(addStuff({ fields, address }))
     };
 
     useEffect(() => {
