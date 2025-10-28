@@ -26,7 +26,7 @@ const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, d
 const { teacherRegister, teacherLogIn, getTeachers, getTeacherDetail, deleteTeachers, deleteTeachersByClass, deleteTeacher, updateTeacherSubject, teacherAttendance } = require('../controllers/teacher-controller.js');
 const { getTimeTable , putTimeTable , getBatch , postBatch , deleteBatch , getCalendar , postCalendar , putCalendar , deleteCalendar } = require('../controllers/timetable-controller.js');
 const {notesRoutes} = require('./notesRoutes.js');
-const {assignmentRoutes} = require('./assignmentRoutes.js');
+const {assignmentRoutes} = require('./assignmentsRoutes.js');
 const {noticeRoutes} = require('./noticeRoutes.js');
 const {feedbackRoutes} = require('./feedback.js');
 const {chatbotRoutes} = require('./chatbot.js');

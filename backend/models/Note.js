@@ -1,12 +1,10 @@
 const mongoose = require("mongoose");
 
-const NoteSchema = new mongoose.Schema({
-  title: { type: String, required: true },
+const noteSchema = new mongoose.Schema({
   subject: { type: String, required: true },
-  year: { type: Number },
-  driveFileId: String,
-  fileUrl: String,
-  uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
-}, { timestamps: true });
+  title: { type: String, required: true },
+  drive_link: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
 
-module.exports = mongoose.model("Note", NoteSchema);
+module.exports = mongoose.model("Note", noteSchema);

@@ -6,6 +6,9 @@ const cors = require("cors")
 const mongoose = require("mongoose")
 const dotenv = require("dotenv")
 // const bodyParser = require("body-parser")
+const notesRoutes = require("./routes/notesRoutes");
+const assignmentsRoutes = require("./routes/assignmentsRoutes");
+
 const app = express()
 const Routes = require("./routes/route.js")
 const chatbotRoutes = require('./routes/chatbot');
@@ -21,6 +24,9 @@ dotenv.config();
 
 app.use(express.json({ limit: '10mb' }))
 app.use(cors())
+
+app.use("/api/notes", notesRoutes);
+app.use("/api/assignments", assignmentsRoutes);
 
 // mongoose
 //     .connect(process.env.MONGO_URL, {
