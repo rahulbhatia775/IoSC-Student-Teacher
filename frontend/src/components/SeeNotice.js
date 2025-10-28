@@ -11,15 +11,21 @@ const SeeNotice = () => {
     const { noticesList, loading, error, response } = useSelector((state) => state.notice);
 
     useEffect(() => {
-        console.log('🔍 SEE NOTICE DEBUG - Current User:', currentUser);
-        console.log('🔍 SEE NOTICE DEBUG - Current Role:', currentRole);
+        if (process.env.NODE_ENV === 'development') {
+            console.log('🔍 SEE NOTICE DEBUG - Current User:', currentUser);
+            console.log('🔍 SEE NOTICE DEBUG - Current Role:', currentRole);
+        }
         
         if (currentUser && currentRole === "Admin") {
-            console.log('🔍 SEE NOTICE DEBUG - Admin: fetching notices for admin ID:', currentUser._id);
+            if (process.env.NODE_ENV === 'development') {
+                console.log('🔍 SEE NOTICE DEBUG - Admin: fetching notices for admin ID:', currentUser._id);
+            }
             dispatch(getAllNotices(currentUser._id, "Notice"));
         }
         else if (currentUser) {
-            console.log('🔍 SEE NOTICE DEBUG - Student/Teacher: fetching all notices');
+            if (process.env.NODE_ENV === 'development') {
+                console.log('🔍 SEE NOTICE DEBUG - Student/Teacher: fetching all notices');
+            }
             // For students and teachers, fetch all notices (no school filtering for now)
             dispatch(getAllNotices(null, "Notice"));
         } else {

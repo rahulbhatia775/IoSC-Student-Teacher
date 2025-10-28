@@ -68,28 +68,11 @@ const transporter = nodemailer.createTransport({
 // };
 
 const adminRegister = async (req, res) => {
-    try {
-        const admin = new Admin({
-            ...req.body
-        });
-
-        const existingAdminByEmail = await Admin.findOne({ email: req.body.email });
-        const existingSchool = await Admin.findOne({ schoolName: req.body.schoolName });
-
-        if (existingAdminByEmail) {
-            res.send({ message: 'Email already exists' });
-        }
-        else if (existingSchool) {
-            res.send({ message: 'School name already exists' });
-        }
-        else {
-            let result = await admin.save();
-            result.password = undefined;
-            res.send(result);
-        }
-    } catch (err) {
-        res.status(500).json(err);
-    }
+    // Admin registration is disabled - only students and teachers can register
+    res.status(403).json({ 
+        error: "Admin registration is not allowed", 
+        message: "Only students and teachers can register. Admins are created by system administrators." 
+    });
 };
 
 const adminLogIn = async (req, res) => {

@@ -25,9 +25,10 @@ const Homepage = () => {
                 Login
               </IndigoButton>
             </StyledLink>
-            <StyledLink to="/Adminregister">
-              <WhiteWithIndigoBorderButton variant="outlined" fullWidth>
-                Sign Up
+            
+            <StyledLink to="/register">
+              <WhiteWithIndigoBorderButton variant="outlined" fullWidth sx={{ mt: 2 }}>
+                Register
               </WhiteWithIndigoBorderButton>
             </StyledLink>
           </ContentBox>

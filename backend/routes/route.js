@@ -29,8 +29,8 @@ const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, d
 const { teacherRegister, teacherLogIn, teacherForgotPassword, teacherResetPassword, getTeachers, getTeacherDetail, deleteTeachers, deleteTeachersByClass, deleteTeacher, updateTeacherSubject, teacherAttendance } = require('../controllers/teacher-controller.js');
 // const { getTimeTable , putTimeTable , getBatch , postBatch , deleteBatch , getCalendar , postCalendar , putCalendar , deleteCalendar } = require('../controllers/timetable-controller.js');
 
-// Admin
-router.post('/AdminReg', adminRegister);
+// Admin (registration disabled)
+// router.post('/AdminReg', adminRegister); // Disabled - admins created by system administrators only
 router.post('/AdminLogin', adminLogIn);
 router.post('/AdminForgotPassword', adminForgotPassword);
 

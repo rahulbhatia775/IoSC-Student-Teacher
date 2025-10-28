@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Button,
@@ -28,11 +28,18 @@ const TeacherResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  let redirectTimer;
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimer) clearTimeout(redirectTimer);
+    };
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -40,7 +47,7 @@ const TeacherResetPassword = () => {
     // Validation
     const newErrors = {};
     if (!password) newErrors.password = "Password is required";
-    if (password.length < 6) newErrors.password = "Password must be at least 6 characters";
+    if (password.length < 8) newErrors.password = "Password must be at least 8 characters";
     if (!confirmPassword) newErrors.confirmPassword = "Please confirm your password";
     if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match";
 
@@ -56,7 +63,7 @@ const TeacherResetPassword = () => {
       await axios.post(`http://localhost:5000/TeacherResetPassword/${token}`, { password });
       setMessage("Password reset successful! You can now login with your new password.");
       setShowPopup(true);
-      setTimeout(() => {
+      redirectTimer = setTimeout(() => {
         navigate('/Teacher/login');
       }, 2000);
     } catch (err) {

@@ -28,22 +28,30 @@ const teacherRegister = async (req, res) => {
         const teacher = new Teacher({ 
             name, 
             email, 
-            password, // Will be hashed by pre-save middleware
-            role, 
+            password,
+            role: role || 'Teacher', 
             school, 
-            teachSubject, 
+            teachSubject: teachSubject || undefined,
             teachSclass,
-            isVerified: true // For predefined teachers, set as verified
+            isVerified: true
         });
 
         let result = await teacher.save();
-        if (teachSubject) {
-            await Subject.findByIdAndUpdate(teachSubject, { teacher: teacher._id });
+        
+        // Only update subject if teachSubject is a valid ObjectId
+        if (teachSubject && teachSubject.match(/^[0-9a-fA-F]{24}$/)) {
+            try {
+                await Subject.findByIdAndUpdate(teachSubject, { teacher: teacher._id });
+            } catch (subjectError) {
+                console.log('Subject update failed:', subjectError.message);
+                // Continue with registration even if subject update fails
+            }
         }
         
         result.password = undefined;
         res.status(201).json({ success: true, teacher: result });
     } catch (err) {
+        console.error("Teacher registration error:", err.message);
         res.status(500).json({ error: "Registration failed", details: err.message });
     }
 };

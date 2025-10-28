@@ -21,15 +21,15 @@ const teacherSchema = new mongoose.Schema({
         default: "Teacher"
     },
     school: {
-        type: mongoose.Schema.Types.Mixed, // Allow both ObjectId and String for flexibility
+        type: mongoose.Schema.Types.Mixed,
         required: true,
     },
     teachSubject: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.Mixed,
         ref: 'subject',
     },
     teachSclass: {
-        type: mongoose.Schema.Types.Mixed, // Allow both ObjectId and String for flexibility
+        type: mongoose.Schema.Types.Mixed,
         required: true,
     },
     isVerified: { 

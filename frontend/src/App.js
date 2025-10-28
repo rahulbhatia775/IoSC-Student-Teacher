@@ -7,6 +7,9 @@ import StudentDashboard from './pages/student/StudentDashboard';
 import TeacherDashboard from './pages/teacher/TeacherDashboard';
 import LoginPage from './pages/LoginPage';
 import AdminRegisterPage from './pages/admin/AdminRegisterPage';
+import TeacherRegister from './pages/TeacherRegister';
+import StudentRegister from './pages/StudentRegister';
+import ChooseRegister from './pages/ChooseRegister';
 import ChooseUser from './pages/ChooseUser';
 import StudentResetPassword from './pages/StudentResetPassword';
 import TeacherResetPassword from './pages/TeacherResetPassword';
@@ -23,6 +26,7 @@ const App = () => {
           <Route path="/" element={<Homepage />} />
           <Route path="/choose" element={<ChooseUser visitor="normal" />} />
           <Route path="/chooseasguest" element={<ChooseUser visitor="guest" />} />
+          <Route path="/register" element={<ChooseRegister />} />
 
           <Route path="/Adminlogin" element={<LoginPage role="Admin" />} />
           <Route path="/Studentlogin" element={<LoginPage role="Student" />} />
@@ -31,6 +35,8 @@ const App = () => {
           <Route path="/Teacher/login" element={<LoginPage role="Teacher" />} />
 
           <Route path="/Adminregister" element={<AdminRegisterPage />} />
+          <Route path="/Teacherregister" element={<TeacherRegister />} />
+          <Route path="/Studentregister" element={<StudentRegister />} />
           
           <Route path="/StudentResetPassword/:token" element={<StudentResetPassword />} />
           <Route path="/TeacherResetPassword/:token" element={<TeacherResetPassword />} />

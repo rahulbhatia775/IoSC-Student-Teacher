@@ -27,17 +27,23 @@ const StudentHomePage = () => {
         : null;
 
     useEffect(() => {
-        console.log('🔍 STUDENT HOME DEBUG - Current User:', currentUser);
-        console.log('🔍 STUDENT HOME DEBUG - Class ID extracted:', classID);
+        if (process.env.NODE_ENV === 'development') {
+            console.log('🔍 STUDENT HOME DEBUG - Current User:', currentUser);
+            console.log('🔍 STUDENT HOME DEBUG - Class ID extracted:', classID);
+        }
         
         if (currentUser?._id) {
-            console.log('🔍 STUDENT HOME DEBUG - Fetching user details for ID:', currentUser._id);
+            if (process.env.NODE_ENV === 'development') {
+                console.log('🔍 STUDENT HOME DEBUG - Fetching user details for ID:', currentUser._id);
+            }
             dispatch(getUserDetails({ id: currentUser._id, address: "Student" }));
         } else {
             console.log('🚨 STUDENT HOME ERROR - No user ID found');
         }
         if (classID) {
-            console.log('🔍 STUDENT HOME DEBUG - Fetching subjects for class ID:', classID);
+            if (process.env.NODE_ENV === 'development') {
+                console.log('🔍 STUDENT HOME DEBUG - Fetching subjects for class ID:', classID);
+            }
             dispatch(getSubjectList(classID, "ClassSubjects"));
         } else {
             console.log('🚨 STUDENT HOME ERROR - No valid class ID found');

@@ -38,6 +38,12 @@ const AddNotice = () => {
       return;
     }
     
+    if (currentUser.role !== 'Admin') {
+      setMessage('Only admins can add notices');
+      setShowPopup(true);
+      return;
+    }
+    
     if (!title.trim() || !details.trim() || !date) {
       setMessage('Please fill all required fields');
       setShowPopup(true);
