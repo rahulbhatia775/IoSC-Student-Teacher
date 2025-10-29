@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const Student = require("../models/studentSchema.js");
 const Subject = require("../models/subjectSchema.js");
 
@@ -229,8 +230,9 @@ const resetPassword = async (req, res) => {
         const { token } = req.params;
         const { password } = req.body;
 
+        const hash = crypto.createHash('sha256').update(token).digest('hex');
         const student = await Student.findOne({
-            resetPasswordToken: token,
+            resetPasswordToken: hash,
             resetPasswordExpires: { $gt: Date.now() }
         });
 

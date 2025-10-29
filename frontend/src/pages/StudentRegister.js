@@ -80,8 +80,8 @@ const StudentRegister = () => {
     // Email validation
     if (!formData.email) {
       newErrors.email = "Email is required";
-    } else if (!formData.email.endsWith('@std.ggsipu.sc.in')) {
-      newErrors.email = "Email must end with @std.ggsipu.sc.in";
+    } else if (!formData.email.endsWith('@std.ac.in')) {
+      newErrors.email = "Email must end with @std.ac.in";
     }
 
     // School validation
@@ -207,8 +207,8 @@ const StudentRegister = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 error={!!errors.email}
-                helperText={errors.email || "Must end with @std.ggsipu.sc.in"}
-                placeholder="yourname@std.ggsipu.sc.in"
+                helperText={errors.email || "Must end with @std.ac.in"}
+                placeholder="yourname@std.ac.in"
               />
 
               <TextField

@@ -43,7 +43,7 @@ const SubjectForm = () => {
     };
 
     const handleAddSubject = () => {
-        setSubjects([...subjects, { subName: "", subCode: "" }]);
+        setSubjects([...subjects, { subName: "", subCode: "", sessions: "" }]);
     };
 
     const handleRemoveSubject = (index) => () => {

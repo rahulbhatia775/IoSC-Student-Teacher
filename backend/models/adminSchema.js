@@ -49,14 +49,17 @@ adminSchema.methods.comparePassword = async function (enteredPassword) {
 
 // Generate verification token
 adminSchema.methods.generateVerificationToken = function () {
-    this.verificationToken = crypto.randomBytes(32).toString("hex");
-    return this.verificationToken;
+    const token = crypto.randomBytes(32).toString("hex");
+    const hash = crypto.createHash('sha256').update(token).digest('hex');
+    this.verificationToken = hash;
+    return token; // return raw token for emailing
 };
 
 // Generate reset password token
 adminSchema.methods.generateResetToken = function () {
     const token = crypto.randomBytes(32).toString("hex");
-    this.resetPasswordToken = token;
+    const hash = crypto.createHash('sha256').update(token).digest('hex');
+    this.resetPasswordToken = hash;
     this.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     return token;
 };

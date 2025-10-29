@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 
 const TeacherSideBar = () => {
     const { currentUser } = useSelector((state) => state.user);
-    const sclassName = currentUser.teachSclass
+    const sclassName = currentUser?.teachSclass
 
     const location = useLocation();
     return (
@@ -20,7 +20,13 @@ const TeacherSideBar = () => {
             <React.Fragment>
                 <ListItemButton component={Link} to="/">
                     <ListItemIcon>
-                        <HomeIcon color={location.pathname === ("/" || "/Teacher/dashboard") ? 'primary' : 'inherit'} />
+                        <HomeIcon
+                            color={
+                                (location.pathname === '/' || location.pathname.startsWith('/Teacher/dashboard'))
+                                    ? 'primary'
+                                    : 'inherit'
+                            }
+                        />
                     </ListItemIcon>
                     <ListItemText primary="Home" />
                 </ListItemButton>
@@ -28,7 +34,7 @@ const TeacherSideBar = () => {
                     <ListItemIcon>
                         <ClassOutlinedIcon color={location.pathname.startsWith("/Teacher/class") ? 'primary' : 'inherit'} />
                     </ListItemIcon>
-                    <ListItemText primary={`Class ${sclassName.sclassName}`} />
+                    <ListItemText primary={`Class ${sclassName?.sclassName ?? ''}`} />
                 </ListItemButton>
                 <ListItemButton component={Link} to="/Teacher/notices">
                     <ListItemIcon>

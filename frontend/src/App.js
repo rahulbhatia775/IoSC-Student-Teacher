@@ -21,7 +21,14 @@ const App = () => {
 
   return (
     <Router>
-      {currentRole === null &&
+      {/* Always accessible routes */}
+      <Routes>
+        <Route path="/login-success" element={<LoginSuccess />} />
+        <Route path="/logout" element={<Logout />} />
+      </Routes>
+
+      {/* Guest-only routes */}
+      {currentRole === null && (
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/choose" element={<ChooseUser visitor="normal" />} />
@@ -40,29 +47,15 @@ const App = () => {
           
           <Route path="/StudentResetPassword/:token" element={<StudentResetPassword />} />
           <Route path="/TeacherResetPassword/:token" element={<TeacherResetPassword />} />
-          <Route path="/login-success" element={<LoginSuccess />} />
-          <Route path="/logout" element={<Logout />} />
 
           <Route path='*' element={<Navigate to="/" />} />
-        </Routes>}
+        </Routes>
+      )}
 
-      {currentRole === "Admin" &&
-        <>
-          <AdminDashboard />
-        </>
-      }
-
-      {currentRole === "Student" &&
-        <>
-          <StudentDashboard />
-        </>
-      }
-
-      {currentRole === "Teacher" &&
-        <>
-          <TeacherDashboard />
-        </>
-      }
+      {/* Role-based dashboards */}
+      {currentRole === "Admin" && <AdminDashboard />}
+      {currentRole === "Student" && <StudentDashboard />}
+      {currentRole === "Teacher" && <TeacherDashboard />}
     </Router>
   )
 }

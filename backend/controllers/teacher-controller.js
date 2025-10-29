@@ -1,7 +1,8 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
+const crypto = require("crypto");
 const Teacher = require("../models/teacherSchema.js");
 const Subject = require("../models/subjectSchema.js");
 
@@ -188,8 +189,9 @@ const teacherResetPassword = async (req, res) => {
         const { token } = req.params;
         const { password } = req.body;
 
+        const hash = crypto.createHash('sha256').update(token).digest('hex');
         const teacher = await Teacher.findOne({
-            resetPasswordToken: token,
+            resetPasswordToken: hash,
             resetPasswordExpires: { $gt: Date.now() }
         });
 
