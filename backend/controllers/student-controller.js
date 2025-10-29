@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+=======
+const jwt=require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+const dotenv = require("dotenv");
+const bcrypt = require("bcrypt");
+>>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
 const Student = require("../models/studentSchema.js");
 const Subject = require("../models/subjectSchema.js");
 
@@ -27,12 +34,18 @@ const sendVerificationEmail = async (student, req) => {
 };
 
 const studentRegister = async (req, res) => {
+<<<<<<< HEAD
     try {
         const { name, email, password, school, sclassName, rollNum } = req.body;
         
         if (!email) {
             return res.status(400).json({ error: "Email required" });
         }
+=======
+  try {
+    const { name, email } = req.body;
+    if (!name || !email) return res.status(400).json({ error: "Name and email required" });
+>>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
 
         const existingStudent = await Student.findOne({ email });
         if (existingStudent) {
@@ -60,20 +73,133 @@ const studentRegister = async (req, res) => {
 };
 
 const verifyEmail = async (req, res) => {
+<<<<<<< HEAD
     try {
         const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET);
         const student = await Student.findById(decoded.id);
         if (!student) return res.status(400).json({ error: "Invalid token" });
+=======
+  try {
+    const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET);
+    const student = await Student.findById(decoded.id);
+    if (!student) return res.status(400).json({ error: "Invalid token" });
+>>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
 
         student.isVerified = true;
         await student.save();
 
+<<<<<<< HEAD
         res.json({ success: true, message: "Email verified. Please set your password." });
     } catch (err) {
         res.status(500).json({ error: "Email verification failed" });
+=======
+    res.json({ success: true, message: "Email verified. Please set your password." });
+  } catch (err) {
+    res.status(500).json({ error: "Email verification failed" });
+  }
+};
+
+const setPassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const student = await Student.findOne({ email });
+    if (!student || !student.isVerified) return res.status(400).json({ error: "User not verified" });
+
+    const salt = await bcrypt.genSalt(10);
+    student.password = await bcrypt.hash(password, salt);
+    await student.save();
+
+    res.json({ success: true, message: "Password set successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to set password" });
+  }
+};
+
+const studentLogIn = async (req, res) => {
+  try {
+    console.log("Login request body:", req.body);
+    const { email, password } = req.body;
+    const student = await Student.findOne({ email });
+    if (!student || !student.password) return res.status(401).json({ error: "Invalid credentials" });
+
+    const isMatch = await bcrypt.compare(password, student.password);
+    if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
+
+    const token = jwt.sign({ id: student._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+    res.json({ success: true, token, student });
+  } catch (err) {
+    res.status(500).json({ error: "Login failed" });
+  }
+};
+
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const student = await Student.findOne({ email });
+    if (!student) return res.status(404).json({ error: "Email not found" });
+
+    const token = jwt.sign({ id: student._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const url = `${req.protocol}://${req.get("host")}/api/student/reset-password/${token}`;
+
+    await transporter.sendMail({
+      to: student.email,
+      subject: "Reset Your Password",
+      html: `<p>Click <a href="${url}">here</a> to reset your password.</p>`
+    });
+
+    res.json({ success: true, message: "Password reset email sent" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to send reset email" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const student = await Student.findById(decoded.id);
+    if (!student) return res.status(400).json({ error: "Invalid or expired token" });
+
+    const salt = await bcrypt.genSalt(10);
+    student.password = await bcrypt.hash(password, salt);
+    await student.save();
+
+    res.json({ success: true, message: "Password reset successful" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to reset password" });
+  }
+};
+
+const getStudents = async (req, res) => {
+  try {
+    let students = await Student.find({ school: req.params.id }).populate("sclassName", "sclassName");
+    students = students.map(s => ({ ...s._doc, password: undefined }));
+    res.send(students);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+const getStudentDetail = async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id)
+      .populate("school", "schoolName")
+      .populate("sclassName", "sclassName")
+      .populate("examResult.subName", "subName")
+      .populate("attendance.subName", "subName sessions");
+
+    if (student) {
+      student.password = undefined;
+      res.send(student);
+    } else {
+      res.send({ message: "No student found" });
+>>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
     }
 };
 
+<<<<<<< HEAD
 const setPassword = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -86,6 +212,13 @@ const setPassword = async (req, res) => {
         res.json({ success: true, message: "Password set successfully" });
     } catch (err) {
         res.status(500).json({ error: "Failed to set password" });
+=======
+const updateStudent = async (req, res) => {
+  try {
+    if (req.body.password) {
+      const salt = await bcrypt.genSalt(10);
+      req.body.password = await bcrypt.hash(req.body.password, salt);
+>>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
     }
 };
 const studentLogIn = async (req, res) => {
@@ -97,6 +230,7 @@ const studentLogIn = async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
+<<<<<<< HEAD
         const isMatch = await student.comparePassword(password);
         if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
 
@@ -107,9 +241,74 @@ const studentLogIn = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Login failed" });
+=======
+const deleteStudent = async (req, res) => {
+  try {
+    const result = await Student.findByIdAndDelete(req.params.id);
+    res.send(result);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+const deleteStudents = async (req, res) => {
+  try {
+    const result = await Student.deleteMany({ school: req.params.id });
+    res.send(result.deletedCount > 0 ? result : { message: "No students found" });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+const deleteStudentsByClass = async (req, res) => {
+  try {
+    const result = await Student.deleteMany({ sclassName: req.params.id });
+    res.send(result.deletedCount > 0 ? result : { message: "No students found" });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+const updateExamResult = async (req, res) => {
+  try {
+    const { subName, marksObtained } = req.body;
+    const student = await Student.findById(req.params.id);
+    if (!student) return res.send({ message: "Student not found" });
+
+    const existingResult = student.examResult.find(r => r.subName.toString() === subName);
+    if (existingResult) existingResult.marksObtained = marksObtained;
+    else student.examResult.push({ subName, marksObtained });
+
+    const result = await student.save();
+    res.send(result);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+const studentAttendance = async (req, res) => {
+  try {
+    const { subName, status, date } = req.body;
+    const student = await Student.findById(req.params.id);
+    const subject = await Subject.findById(subName);
+
+    if (!student) return res.send({ message: "Student not found" });
+
+    const existing = student.attendance.find(a =>
+      a.date.toDateString() === new Date(date).toDateString() &&
+      a.subName.toString() === subName
+    );
+
+    if (existing) existing.status = status;
+    else {
+      const attended = student.attendance.filter(a => a.subName.toString() === subName).length;
+      if (attended >= subject.sessions) return res.send({ message: "Maximum attendance limit reached" });
+      student.attendance.push({ date, status, subName });
+>>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
     }
 };
 
+<<<<<<< HEAD
 // export const studentLogIn = async (req, res) => {
 //   try {
 //     const { email, password } = req.body;
@@ -229,6 +428,38 @@ const resetPassword = async (req, res) => {
     try {
         const { token } = req.params;
         const { password } = req.body;
+=======
+const clearAllStudentsAttendanceBySubject = async (req, res) => {
+  try {
+    const subName = req.params.id;
+    const result = await Student.updateMany(
+      { 'attendance.subName': subName },
+      { $pull: { attendance: { subName } } }
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+const clearAllStudentsAttendance = async (req, res) => {
+  try {
+    const schoolId = req.params.id;
+    const result = await Student.updateMany(
+      { school: schoolId },
+      { $set: { attendance: [] } }
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+const removeStudentAttendanceBySubject = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    const subName = req.body.subId;
+>>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
 
         const hash = crypto.createHash('sha256').update(token).digest('hex');
         const student = await Student.findOne({
@@ -251,6 +482,7 @@ const resetPassword = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
 const getStudents = async (req, res) => {
     try {
         let students = await Student.find({ school: req.params.id }).populate("sclassName", "sclassName");
@@ -443,4 +675,19 @@ module.exports = {
     clearAllStudentsAttendance,
     removeStudentAttendanceBySubject,
     removeStudentAttendance
+=======
+const removeStudentAttendance = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    const result = await Student.updateOne(
+      { _id: studentId },
+      { $set: { attendance: [] } }
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+>>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
 };
+
+module.exports={studentRegister,verifyEmail,setPassword,studentLogIn,forgotPassword,resetPassword,getStudents,getStudentDetail,updateStudent,deleteStudent,deleteStudents,deleteStudentsByClass,updateExamResult,studentAttendance,clearAllStudentsAttendanceBySubject,clearAllStudentsAttendance,removeStudentAttendanceBySubject,removeStudentAttendance};

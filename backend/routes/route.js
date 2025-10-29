@@ -26,8 +26,19 @@ const {
     resetPassword,
     removeStudentAttendance } = require('../controllers/student-controller.js');
 const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, deleteSubject, freeSubjectList, allSubjects, deleteSubjects } = require('../controllers/subject-controller.js');
+<<<<<<< HEAD
 const { teacherRegister, teacherLogIn, teacherForgotPassword, teacherResetPassword, getTeachers, getTeacherDetail, deleteTeachers, deleteTeachersByClass, deleteTeacher, updateTeacherSubject, teacherAttendance } = require('../controllers/teacher-controller.js');
 // const { getTimeTable , putTimeTable , getBatch , postBatch , deleteBatch , getCalendar , postCalendar , putCalendar , deleteCalendar } = require('../controllers/timetable-controller.js');
+=======
+const { teacherRegister, teacherLogIn, getTeachers, getTeacherDetail, deleteTeachers, deleteTeachersByClass, deleteTeacher, updateTeacherSubject, teacherAttendance } = require('../controllers/teacher-controller.js');
+const { getTimeTable , putTimeTable , getBatch , postBatch , deleteBatch , getCalendar , postCalendar , putCalendar , deleteCalendar } = require('../controllers/timetable-controller.js');
+const {notesRoutes} = require('./notesRoutes.js');
+const {assignmentRoutes} = require('./assignmentsRoutes.js');
+const {noticeRoutes} = require('./noticeRoutes.js');
+const {feedbackRoutes} = require('./feedback.js');
+const {chatbotRoutes} = require('./chatbot.js');
+
+>>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
 
 // Admin (registration disabled)
 // router.post('/AdminReg', adminRegister); // Disabled - admins created by system administrators only
@@ -119,6 +130,7 @@ router.delete("/Sclasses/:id", deleteSclasses)
 router.delete("/Sclass/:id", deleteSclass)
 
 // TimeTable
+<<<<<<< HEAD
 // router.get('/TimeTable/:batch', getTimeTable);
 // router.put('/TimeTable/:batch', putTimeTable);
 // router.get('/batches' ,getBatch);
@@ -130,6 +142,19 @@ router.delete("/Sclass/:id", deleteSclass)
 // router.post('/Calender' , postCalendar)
 // router.put('/Calender' , putCalendar);
 // router.delete('/Calender/:id' , deleteCalendar)
+=======
+router.get('/TimeTable/:batch', getTimeTable);
+router.put('/TimeTable/:batch', putTimeTable);
+router.get('/batches' ,getBatch);
+router.post('/batches' , postBatch);
+router.delete('/batches/:batch' , deleteBatch);
+
+// Calendar
+router.get('/Calender' , getCalendar)
+router.post('/Calender' , postCalendar)
+router.put('/Calender' , putCalendar);
+router.delete('/Calender/:id' , deleteCalendar)
+>>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
 
 // Subject
 router.post('/SubjectCreate', subjectCreate);
@@ -142,5 +167,6 @@ router.get("/Subject/:id", getSubjectDetail)
 router.delete("/Subject/:id", deleteSubject)
 router.delete("/Subjects/:id", deleteSubjects)
 router.delete("/SubjectsClass/:id", deleteSubjectsByClass)
+
 
 module.exports = router;

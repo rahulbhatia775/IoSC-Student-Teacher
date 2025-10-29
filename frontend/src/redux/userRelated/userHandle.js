@@ -20,6 +20,7 @@ export const loginUser = (credentials) => async (dispatch) => {
     dispatch(authRequest());
     
     try {
+<<<<<<< HEAD
         const { email, password, role } = credentials;
         console.log('🔍 LOGIN DEBUG - Step 2: Inside try block');
         
@@ -36,6 +37,14 @@ export const loginUser = (credentials) => async (dispatch) => {
         } else if (role === 'Teacher') {
             endpoint = '/TeacherLogin';
             console.log('🔍 LOGIN DEBUG - Step 4c: Teacher role matched, endpoint set to:', endpoint);
+=======
+        console.log(fields, role);
+        const result = await axios.post(`${process.env.REACT_APP_BASE_URL}/${role}Login`, fields, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+        if (result.data.role) {
+            dispatch(authSuccess(result.data));
+>>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
         } else {
             console.log('🔍 LOGIN DEBUG - Step 4d: NO ROLE MATCHED! Role value:', role);
             dispatch(authError('Invalid role provided'));

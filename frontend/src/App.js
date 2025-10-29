@@ -11,14 +11,17 @@ import TeacherRegister from './pages/TeacherRegister';
 import StudentRegister from './pages/StudentRegister';
 import ChooseRegister from './pages/ChooseRegister';
 import ChooseUser from './pages/ChooseUser';
+<<<<<<< HEAD
 import StudentResetPassword from './pages/StudentResetPassword';
 import TeacherResetPassword from './pages/TeacherResetPassword';
 import LoginSuccess from './pages/LoginSuccess';
 import Logout from './pages/Logout';
 
+=======
+>>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
 const App = () => {
   const { currentRole } = useSelector(state => state.user);
-
+    
   return (
     <Router>
       {/* Always accessible routes */}
