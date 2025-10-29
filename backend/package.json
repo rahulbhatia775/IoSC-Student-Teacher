@@ -17,26 +17,18 @@
     "bcryptjs": "^3.0.2",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
-<<<<<<< HEAD
-=======
     "crypto": "^1.0.1",
     "nodemailer": "^7.0.10",
     "nodemon": "^2.0.22",
->>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "googleapis": "^164.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^7.8.7",
-<<<<<<< HEAD
-    "nodemailer": "^7.0.10"
+    "mongoose": "^7.8.7"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
-=======
+    "nodemon": "^2.0.22",
     "morgan": "^1.10.1",
-    "multer": "^2.0.2",
-    "nodemon": "^3.1.10"
->>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
+    "multer": "^2.0.2"
   }
 }
