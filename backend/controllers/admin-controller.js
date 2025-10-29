@@ -9,13 +9,15 @@ const Subject = require('../models/subjectSchema.js');
 const Notice = require('../models/noticeSchema.js');
 const Complain = require('../models/complainSchema.js');
 
+const config=require("../config.js");
+
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: config.apiKeys.email,
+        pass: config.apiKeys.pass
     }
 });
 
@@ -101,7 +103,7 @@ const adminLogIn = async (req, res) => {
 
         // Generate JWT token for admin
         const jwt = require('jsonwebtoken');
-        const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        const token = jwt.sign({ id: admin._id }, config.security.jwtSecret, { expiresIn: config.security.jetExpire });
         
         admin.password = undefined;
         console.log('🔍 ADMIN LOGIN DEBUG - Login successful, token generated');

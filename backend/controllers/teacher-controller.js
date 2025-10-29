@@ -6,18 +6,21 @@ const crypto = require("crypto");
 const Teacher = require("../models/teacherSchema.js");
 const Subject = require("../models/subjectSchema.js");
 
+const config=require("../config.js");
+
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: config.apiKeys.email,
+        pass: config.apiKeys.pass
     }
 });
 
 // TEACHER REGISTER
 const teacherRegister = async (req, res) => {
+    console.log(req.body);
     const { name, email, password, role, school, teachSubject, teachSclass } = req.body;
     try {
         const existingTeacherByEmail = await Teacher.findOne({ email });
@@ -70,7 +73,7 @@ const teacherLogIn = async (req, res) => {
         const isMatch = await teacher.comparePassword(password);
         if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
 
-        const token = jwt.sign({ id: teacher._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        const token = jwt.sign({ id: teacher._id }, config.security.jwtSecret, { expiresIn: config.security.jetExpire });
 
         teacher.password = undefined;
         await teacher.populate("teachSubject", "subName sessions");

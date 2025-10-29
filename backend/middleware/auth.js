@@ -1,8 +1,9 @@
-<<<<<<< HEAD
 const jwt = require('jsonwebtoken');
 const Student = require('../models/studentSchema');
 const Teacher = require('../models/teacherSchema');
 const Admin = require('../models/adminSchema');
+
+const config=require("../config.js");
 
 const authenticateToken = async (req, res, next) => {
     try {
@@ -13,7 +14,7 @@ const authenticateToken = async (req, res, next) => {
             return res.status(401).json({ error: 'Access token required' });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, config.security.jwtSecret);
         
         // Try to find user in Student, Teacher, or Admin collections
         let user = await Student.findById(decoded.id).select('-password');
@@ -44,7 +45,7 @@ const authenticateStudent = async (req, res, next) => {
             return res.status(401).json({ error: 'Access token required' });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, config.security.jwtSecret);
         const student = await Student.findById(decoded.id).select('-password');
 
         if (!student) {
@@ -67,7 +68,7 @@ const authenticateTeacher = async (req, res, next) => {
             return res.status(401).json({ error: 'Access token required' });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, config.security.jwtSecret);
         const teacher = await Teacher.findById(decoded.id).select('-password');
 
         if (!teacher) {
@@ -90,7 +91,7 @@ const authenticateAdmin = async (req, res, next) => {
             return res.status(401).json({ error: 'Access token required' });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, config.security.jwtSecret);
         const admin = await Admin.findById(decoded.id).select('-password');
 
         if (!admin) {
@@ -114,7 +115,7 @@ const authenticateTeacherOrAdmin = async (req, res, next) => {
             return res.status(401).json({ error: 'Access token required' });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, config.security.jwtSecret);
         
         // Try to find user as teacher first, then admin
         let user = await Teacher.findById(decoded.id).select('-password');
@@ -145,32 +146,3 @@ module.exports = {
     authenticateAdmin,
     authenticateTeacherOrAdmin
 };
-=======
-const jwt =require("jsonwebtoken");
-const dotenv= require("dotenv");
-const User= require("../models/User.js");
-dotenv.config();
-
-const authMiddleware = async (req, res, next) => {
-  const token = req.header("Authorization")?.replace("Bearer ", "") || req.query.token;
-  if (!token) return res.status(401).json({ message: "No token provided" });
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select("-password");
-    if (!user) return res.status(401).json({ message: "Invalid token" });
-    req.user = user;
-    next();
-  } catch (err) {
-    res.status(401).json({ message: "Token not valid" });
-  }
-};
-
-const authorizeRoles = (...roles) => (req, res, next) => {
-  if (!req.user) return res.status(401).json({ message: "Not authenticated" });
-  if (!roles.includes(req.user.role)) return res.status(403).json({ message: "Forbidden" });
-  next();
-};
-
-module.exports = { authMiddleware, authorizeRoles };
->>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b

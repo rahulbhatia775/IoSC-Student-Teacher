@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const Notice = require("../models/noticeSchema.js");
 const Teacher = require("../models/teacherSchema.js");
 const Admin = require("../models/adminSchema.js");
@@ -9,13 +8,6 @@ const noticeCreate = async (req, res) => {
         const { title, details, school, priority, date } = req.body;
         const userId = req.user._id; // From authentication middleware
         const userRole = req.user.role; // From authentication middleware
-=======
-const Notice=require("../models/noticeSchema.js");
-
-const noticeCreate = async (req, res) => {
-  try {
-    const { title, details, date, school } = req.body;
->>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
 
         console.log('🔍 NOTICE CREATE DEBUG - User:', { userId, userRole });
 
@@ -70,7 +62,6 @@ const noticeCreate = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
 // Get All Notices (Students and Teachers can view)
 const noticeList = async (req, res) => {
     try {
@@ -104,31 +95,9 @@ const noticeList = async (req, res) => {
     } catch (error) {
         console.error("Notice fetch error:", error);
         res.status(500).json({ error: "Failed to fetch notices", details: error.message });
-=======
-const noticeList = async (req, res) => {
-  try {
-    const notices = await Notice.find().sort({ createdAt: -1 });
-    res.json({ success: true, notices });
-  } catch (error) {
-    console.error("Notice fetch error:", error);
-    res.status(500).json({ error: "Failed to fetch notices" });
-  }
-};
-
-const updateNotice = async (req, res) => {
-  try {
-    const updatedNotice = await Notice.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    if (!updatedNotice) {
-      return res.status(404).json({ error: "Notice not found" });
->>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
     }
 };
 
-<<<<<<< HEAD
 // Get Notices by Teacher/Admin (User's own notices)
 const getTeacherNotices = async (req, res) => {
     try {
@@ -152,17 +121,9 @@ const getTeacherNotices = async (req, res) => {
     } catch (error) {
         console.error("User notices fetch error:", error);
         res.status(500).json({ error: "Failed to fetch user notices" });
-=======
-const deleteNotice = async (req, res) => {
-  try {
-    const deleted = await Notice.findByIdAndDelete(req.params.id);
-    if (!deleted) {
-      return res.status(404).json({ error: "Notice not found" });
->>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
     }
 };
 
-<<<<<<< HEAD
 // Get Single Notice
 const getNoticeDetail = async (req, res) => {
     try {
@@ -283,16 +244,4 @@ module.exports = {
     deleteNotice,
     deleteTeacherNotices,
     deleteNotices
-=======
-const deleteNotices = async (req, res) => {
-  try {
-    await Notice.deleteMany();
-    res.json({ success: true, message: "All notices deleted" });
-  } catch (error) {
-    console.error("Notice delete-all error:", error);
-    res.status(500).json({ error: "Failed to delete notices" });
-  }
->>>>>>> 3e0eaca9b773d432e0e11daee5d48e6be8b71e1b
 };
-
-module.exports = {noticeCreate,noticeList,updateNotice,deleteNotice,deleteNotices};
