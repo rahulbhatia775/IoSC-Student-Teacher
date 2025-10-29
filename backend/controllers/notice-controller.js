@@ -1,6 +1,6 @@
-import Notice from "../models/noticeSchema.js";
+const Notice=require("../models/noticeSchema.js");
 
-export const noticeCreate = async (req, res) => {
+const noticeCreate = async (req, res) => {
   try {
     const { title, details, date, school } = req.body;
 
@@ -16,7 +16,7 @@ export const noticeCreate = async (req, res) => {
   }
 };
 
-export const noticeList = async (req, res) => {
+const noticeList = async (req, res) => {
   try {
     const notices = await Notice.find().sort({ createdAt: -1 });
     res.json({ success: true, notices });
@@ -26,7 +26,7 @@ export const noticeList = async (req, res) => {
   }
 };
 
-export const updateNotice = async (req, res) => {
+const updateNotice = async (req, res) => {
   try {
     const updatedNotice = await Notice.findByIdAndUpdate(
       req.params.id,
@@ -43,7 +43,7 @@ export const updateNotice = async (req, res) => {
   }
 };
 
-export const deleteNotice = async (req, res) => {
+const deleteNotice = async (req, res) => {
   try {
     const deleted = await Notice.findByIdAndDelete(req.params.id);
     if (!deleted) {
@@ -56,7 +56,7 @@ export const deleteNotice = async (req, res) => {
   }
 };
 
-export const deleteNotices = async (req, res) => {
+const deleteNotices = async (req, res) => {
   try {
     await Notice.deleteMany();
     res.json({ success: true, message: "All notices deleted" });
@@ -65,3 +65,5 @@ export const deleteNotices = async (req, res) => {
     res.status(500).json({ error: "Failed to delete notices" });
   }
 };
+
+module.exports = {noticeCreate,noticeList,updateNotice,deleteNotice,deleteNotices};

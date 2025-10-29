@@ -1,9 +1,9 @@
-import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
-import bcrypt from "bcrypt";
-import Student from "../models/studentSchema.js";
-import Subject from "../models/subjectSchema.js";
+const jwt=require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+const dotenv = require("dotenv");
+const bcrypt = require("bcrypt");
+const Student = require("../models/studentSchema.js");
+const Subject = require("../models/subjectSchema.js");
 
 dotenv.config();
 
@@ -25,7 +25,7 @@ const sendVerificationEmail = async (student, req) => {
   });
 };
 
-export const studentRegister = async (req, res) => {
+const studentRegister = async (req, res) => {
   try {
     const { name, email } = req.body;
     if (!name || !email) return res.status(400).json({ error: "Name and email required" });
@@ -47,7 +47,7 @@ export const studentRegister = async (req, res) => {
   }
 };
 
-export const verifyEmail = async (req, res) => {
+const verifyEmail = async (req, res) => {
   try {
     const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET);
     const student = await Student.findById(decoded.id);
@@ -62,7 +62,7 @@ export const verifyEmail = async (req, res) => {
   }
 };
 
-export const setPassword = async (req, res) => {
+const setPassword = async (req, res) => {
   try {
     const { email, password } = req.body;
     const student = await Student.findOne({ email });
@@ -78,8 +78,9 @@ export const setPassword = async (req, res) => {
   }
 };
 
-export const studentLogIn = async (req, res) => {
+const studentLogIn = async (req, res) => {
   try {
+    console.log("Login request body:", req.body);
     const { email, password } = req.body;
     const student = await Student.findOne({ email });
     if (!student || !student.password) return res.status(401).json({ error: "Invalid credentials" });
@@ -94,7 +95,7 @@ export const studentLogIn = async (req, res) => {
   }
 };
 
-export const forgotPassword = async (req, res) => {
+const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     const student = await Student.findOne({ email });
@@ -115,7 +116,7 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-export const resetPassword = async (req, res) => {
+const resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
     const { password } = req.body;
@@ -134,7 +135,7 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-export const getStudents = async (req, res) => {
+const getStudents = async (req, res) => {
   try {
     let students = await Student.find({ school: req.params.id }).populate("sclassName", "sclassName");
     students = students.map(s => ({ ...s._doc, password: undefined }));
@@ -144,7 +145,7 @@ export const getStudents = async (req, res) => {
   }
 };
 
-export const getStudentDetail = async (req, res) => {
+const getStudentDetail = async (req, res) => {
   try {
     const student = await Student.findById(req.params.id)
       .populate("school", "schoolName")
@@ -163,7 +164,7 @@ export const getStudentDetail = async (req, res) => {
   }
 };
 
-export const updateStudent = async (req, res) => {
+const updateStudent = async (req, res) => {
   try {
     if (req.body.password) {
       const salt = await bcrypt.genSalt(10);
@@ -178,7 +179,7 @@ export const updateStudent = async (req, res) => {
   }
 };
 
-export const deleteStudent = async (req, res) => {
+const deleteStudent = async (req, res) => {
   try {
     const result = await Student.findByIdAndDelete(req.params.id);
     res.send(result);
@@ -187,7 +188,7 @@ export const deleteStudent = async (req, res) => {
   }
 };
 
-export const deleteStudents = async (req, res) => {
+const deleteStudents = async (req, res) => {
   try {
     const result = await Student.deleteMany({ school: req.params.id });
     res.send(result.deletedCount > 0 ? result : { message: "No students found" });
@@ -196,7 +197,7 @@ export const deleteStudents = async (req, res) => {
   }
 };
 
-export const deleteStudentsByClass = async (req, res) => {
+const deleteStudentsByClass = async (req, res) => {
   try {
     const result = await Student.deleteMany({ sclassName: req.params.id });
     res.send(result.deletedCount > 0 ? result : { message: "No students found" });
@@ -205,7 +206,7 @@ export const deleteStudentsByClass = async (req, res) => {
   }
 };
 
-export const updateExamResult = async (req, res) => {
+const updateExamResult = async (req, res) => {
   try {
     const { subName, marksObtained } = req.body;
     const student = await Student.findById(req.params.id);
@@ -222,7 +223,7 @@ export const updateExamResult = async (req, res) => {
   }
 };
 
-export const studentAttendance = async (req, res) => {
+const studentAttendance = async (req, res) => {
   try {
     const { subName, status, date } = req.body;
     const student = await Student.findById(req.params.id);
@@ -249,7 +250,7 @@ export const studentAttendance = async (req, res) => {
   }
 };
 
-export const clearAllStudentsAttendanceBySubject = async (req, res) => {
+const clearAllStudentsAttendanceBySubject = async (req, res) => {
   try {
     const subName = req.params.id;
     const result = await Student.updateMany(
@@ -262,7 +263,7 @@ export const clearAllStudentsAttendanceBySubject = async (req, res) => {
   }
 };
 
-export const clearAllStudentsAttendance = async (req, res) => {
+const clearAllStudentsAttendance = async (req, res) => {
   try {
     const schoolId = req.params.id;
     const result = await Student.updateMany(
@@ -275,7 +276,7 @@ export const clearAllStudentsAttendance = async (req, res) => {
   }
 };
 
-export const removeStudentAttendanceBySubject = async (req, res) => {
+const removeStudentAttendanceBySubject = async (req, res) => {
   try {
     const studentId = req.params.id;
     const subName = req.body.subId;
@@ -290,7 +291,7 @@ export const removeStudentAttendanceBySubject = async (req, res) => {
   }
 };
 
-export const removeStudentAttendance = async (req, res) => {
+const removeStudentAttendance = async (req, res) => {
   try {
     const studentId = req.params.id;
     const result = await Student.updateOne(
@@ -302,3 +303,5 @@ export const removeStudentAttendance = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
+module.exports={studentRegister,verifyEmail,setPassword,studentLogIn,forgotPassword,resetPassword,getStudents,getStudentDetail,updateStudent,deleteStudent,deleteStudents,deleteStudentsByClass,updateExamResult,studentAttendance,clearAllStudentsAttendanceBySubject,clearAllStudentsAttendance,removeStudentAttendanceBySubject,removeStudentAttendance};

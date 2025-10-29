@@ -29,7 +29,10 @@ const SeeNotice = () => {
         { id: 'date', label: 'Date', minWidth: 170 },
     ];
 
-    const noticeRows = noticesList.map((notice) => {
+    // RIGHT (Checks if noticesList is an array first)
+    const noticeRows = Array.isArray(noticesList)
+    ? noticesList.map((notice) => {
+        // ... (rest of your map logic) ...
         const date = new Date(notice.date);
         const dateString = date.toString() !== "Invalid Date" ? date.toISOString().substring(0, 10) : "Invalid Date";
         return {
@@ -38,7 +41,8 @@ const SeeNotice = () => {
             date: dateString,
             id: notice._id,
         };
-    });
+        })
+    : []; // <-- If not an array, default to an empty array
     return (
         <div style={{ marginTop: '50px', marginRight: '20px' }}>
             {loading ? (
