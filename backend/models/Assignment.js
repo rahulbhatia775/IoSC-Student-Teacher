@@ -1,21 +1,12 @@
 const mongoose = require("mongoose");
 
-const SubmissionSchema = new mongoose.Schema({
-  student: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  driveFileId: String,
-  fileUrl: String,
-  submittedAt: { type: Date, default: Date.now },
-  grade: Number,
-  feedback: String
+const assignmentSchema = new mongoose.Schema({
+  subject: { type: String, required: true },
+  title: { type: String, required: true },
+  due_date: { type: Date, required: true },
+  classroom_link: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
 });
 
-const AssignmentSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: String,
-  subject: String,
-  dueDate: Date,
-  teacher: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  submissions: [SubmissionSchema]
-}, { timestamps: true });
+module.exports = mongoose.model("Assignment", assignmentSchema);
 
-module.exports = mongoose.model("Assignment", AssignmentSchema);

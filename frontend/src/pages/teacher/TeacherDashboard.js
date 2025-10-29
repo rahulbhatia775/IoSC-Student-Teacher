@@ -8,6 +8,9 @@ import {
     Divider,
     IconButton,
 } from '@mui/material';
+import TeacherUploadNotes from './TeacherUploadNotes';
+import TeacherUploadAssignment from './TeacherUploadAssignment';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import TeacherSideBar from './TeacherSideBar';
@@ -86,6 +89,10 @@ const TeacherDashboard = () => {
 
                         <Route path="/Teacher/class/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
                         <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
+                          
+                        <Route path="/Teacher/upload-notes" element={<TeacherUploadNotes />} />
+                        <Route path="/Teacher/upload-assignment" element={<TeacherUploadAssignment />} />
+
 
                         <Route path="/logout" element={<Logout />} />
                     </Routes>

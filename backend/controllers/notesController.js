@@ -1,59 +1,88 @@
-const Note=require("../models/Note.js");
-const fs=require("fs");
-const { uploadFileToDrive, makeFilePublic }=require("../utils/driveHelper.js");
+// const Note = require("../models/Note");
 
-const uploadNote = async (req, res) => {
+// exports.createNote = async (req, res) => {
+//   try {
+//     const { subject, title, drive_link } = req.body;
+//     const note = await Note.create({ subject, title, drive_link });
+//     res.status(201).json({ message: "Note uploaded successfully", note });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error creating note", error });
+//   }
+// };
+
+// exports.getAllNotes = async (req, res) => {
+//   try {
+//     const notes = await Note.find().sort({ createdAt: -1 });
+//     res.json(notes);
+//   } catch (error) {
+//     res.status(500).json({ message: "Error fetching notes", error });
+//   }
+// };
+
+// const Note = require("../models/Note");
+
+// exports.uploadNote = async (req, res) => {
+//   try {
+//     const { title, subject, driveLink } = req.body;
+//     if (!title || !subject || !driveLink) {
+//       return res.status(400).json({ message: "All fields are required" });
+//     }
+
+//     const note = new Note({
+//       title,
+//       subject,
+//       driveLink,
+//       file: req.file ? req.file.filename : null,
+//     });
+
+//     await note.save();
+//     res.status(200).json({ message: "Note uploaded successfully", note });
+//   } catch (error) {
+//     console.error("Upload Note Error:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+// exports.getNotes = async (req, res) => {
+//   try {
+//     const notes = await Note.find();
+//     res.status(200).json(notes);
+//   } catch (error) {
+//     res.status(500).json({ message: "Failed to fetch notes" });
+//   }
+// };
+
+
+// backend/controllers/notesController.js
+
+exports.uploadNote = (req, res) => {
   try {
-    const file = req.file;
-    const { title, subject, year } = req.body;
-    if (!file) return res.status(400).json({ message: "File required" });
+    const { title, subject, driveLink } = req.body;
 
-    const driveFile = await uploadFileToDrive({
-      filePath: file.path,
-      fileName: file.originalname,
-      mimeType: file.mimetype,
-      parents: [process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID]
+    // simple validation
+    if (!title || !subject || !driveLink) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // (Here you’d normally save to MongoDB — for now just send success)
+    res.status(200).json({
+      message: "Note uploaded successfully",
+      data: { title, subject, driveLink },
     });
-
-    const publicFile = await makeFilePublic(driveFile.id);
-
-    const note = await Note.create({
-      title,
-      subject,
-      year,
-      driveFileId: driveFile.id,
-      fileUrl: publicFile.webViewLink || publicFile.webContentLink,
-      uploadedBy: req.user?._id
-    });
-
-    fs.unlinkSync(file.path);
-    res.status(201).json(note);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message });
+  } catch (error) {
+    console.error("❌ Error in uploadNote:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-const listNotes = async (req, res) => {
+exports.getNotes = (req, res) => {
   try {
-    const filter = {};
-    if (req.query.subject) filter.subject = req.query.subject;
-    if (req.query.year) filter.year = Number(req.query.year);
-    const notes = await Note.find(filter).populate("uploadedBy", "name email");
-    res.json(notes);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    // (Later: fetch from DB)
+    res.status(200).json([
+      { title: "Sample Note", subject: "Physics", driveLink: "https://drive.google.com" },
+    ]);
+  } catch (error) {
+    console.error("❌ Error fetching notes:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
-const getNote = async (req, res) => {
-  try {
-    const note = await Note.findById(req.params.id);
-    if (!note) return res.status(404).json({ message: "Not found" });
-    res.json(note);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-module.exports = {uploadNote,listNotes,getNote};
