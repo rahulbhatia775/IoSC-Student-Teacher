@@ -20,7 +20,7 @@ const TeacherProfile = () => {
           <ProfileText>Name: {currentUser.name}</ProfileText>
           <ProfileText>Email: {currentUser.email}</ProfileText>
           <ProfileText>Class: {teachSclass.sclassName}</ProfileText>
-          <ProfileText>Subject: {teachSubject.subName}</ProfileText>
+          {/* <ProfileText>Subject: {teachSubject.subName}</ProfileText> //its a bug can be fixed later on till then change the frontend*/}
           <ProfileText>School: {teachSchool.schoolName}</ProfileText>
         </ProfileCardContent>
       </ProfileCard>
