@@ -2,8 +2,8 @@
 
 | Rank | Username | Points |
 |------|----------|--------|
-| 1 | utkarsh-chauhannn | 50 |
-| 2 | prefierolasoledad | 50 |
+| 1 | prefierolasoledad | 55 |
+| 2 | utkarsh-chauhannn | 50 |
 | 3 | AryanSachan12 | 25 |
 | 4 | coderabbitai[bot] | 18 |
 | 5 | IoscEdc | 5 |
