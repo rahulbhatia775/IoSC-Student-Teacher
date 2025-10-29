@@ -19,12 +19,36 @@ const StudentHomePage = () => {
 
     const [subjectAttendance, setSubjectAttendance] = useState([]);
 
-    const classID = currentUser.sclassName._id
+    // Handle different sclassName field structures
+    const classID = currentUser?.sclassName 
+        ? (typeof currentUser.sclassName === 'object' 
+            ? currentUser.sclassName._id 
+            : currentUser.sclassName)
+        : null;
 
     useEffect(() => {
-        dispatch(getUserDetails(currentUser._id, "Student"));
-        dispatch(getSubjectList(classID, "ClassSubjects"));
-    }, [dispatch, currentUser._id, classID]);
+        if (process.env.NODE_ENV === 'development') {
+            console.log('🔍 STUDENT HOME DEBUG - Current User:', currentUser);
+            console.log('🔍 STUDENT HOME DEBUG - Class ID extracted:', classID);
+        }
+        
+        if (currentUser?._id) {
+            if (process.env.NODE_ENV === 'development') {
+                console.log('🔍 STUDENT HOME DEBUG - Fetching user details for ID:', currentUser._id);
+            }
+            dispatch(getUserDetails({ id: currentUser._id, address: "Student" }));
+        } else {
+            console.log('🚨 STUDENT HOME ERROR - No user ID found');
+        }
+        if (classID) {
+            if (process.env.NODE_ENV === 'development') {
+                console.log('🔍 STUDENT HOME DEBUG - Fetching subjects for class ID:', classID);
+            }
+            dispatch(getSubjectList(classID, "ClassSubjects"));
+        } else {
+            console.log('🚨 STUDENT HOME ERROR - No valid class ID found');
+        }
+    }, [dispatch, currentUser?._id, classID]);
 
     const numberOfSubjects = subjectsList && subjectsList.length;
 

@@ -2,16 +2,15 @@ const router = require('express').Router();
 
 // const { adminRegister, adminLogIn, deleteAdmin, getAdminDetail, updateAdmin } = require('../controllers/admin-controller.js');
 
-const { adminRegister, adminLogIn, getAdminDetail} = require('../controllers/admin-controller.js');
+const { adminRegister, adminLogIn, getAdminDetail, adminForgotPassword} = require('../controllers/admin-controller.js');
 
 const { sclassCreate, sclassList, deleteSclass, deleteSclasses, getSclassDetail, getSclassStudents } = require('../controllers/class-controller.js');
 const { complainCreate, complainList } = require('../controllers/complain-controller.js');
-const { noticeCreate, noticeList, deleteNotices, deleteNotice, updateNotice } = require('../controllers/notice-controller.js');
+const { noticeCreate, noticeList, getTeacherNotices, getNoticeDetail, deleteNotices, deleteNotice, updateNotice, deleteTeacherNotices } = require('../controllers/notice-controller.js');
+const { authenticateTeacher, authenticateToken, authenticateAdmin, authenticateTeacherOrAdmin } = require('../middleware/auth.js');
 const {
     studentRegister,
     studentLogIn,
-    forgotPassword,
-    resetPassword,
     getStudents,
     getStudentDetail,
     deleteStudents,
@@ -23,20 +22,17 @@ const {
     clearAllStudentsAttendanceBySubject,
     clearAllStudentsAttendance,
     removeStudentAttendanceBySubject,
+    forgotPassword,
+    resetPassword,
     removeStudentAttendance } = require('../controllers/student-controller.js');
 const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, deleteSubject, freeSubjectList, allSubjects, deleteSubjects } = require('../controllers/subject-controller.js');
-const { teacherRegister, teacherLogIn, getTeachers, getTeacherDetail, deleteTeachers, deleteTeachersByClass, deleteTeacher, updateTeacherSubject, teacherAttendance } = require('../controllers/teacher-controller.js');
+const { teacherRegister, teacherLogIn, teacherForgotPassword, teacherResetPassword, getTeachers, getTeacherDetail, deleteTeachers, deleteTeachersByClass, deleteTeacher, updateTeacherSubject, teacherAttendance } = require('../controllers/teacher-controller.js');
 const { getTimeTable , putTimeTable , getBatch , postBatch , deleteBatch , getCalendar , postCalendar , putCalendar , deleteCalendar } = require('../controllers/timetable-controller.js');
-const {notesRoutes} = require('./notesRoutes.js');
-const {assignmentRoutes} = require('./assignmentsRoutes.js');
-const {noticeRoutes} = require('./noticeRoutes.js');
-const {feedbackRoutes} = require('./feedback.js');
-const {chatbotRoutes} = require('./chatbot.js');
 
-
-// Admin
-router.post('/AdminReg', adminRegister);
+// Admin (registration disabled)
+// router.post('/AdminReg', adminRegister); // Disabled - admins created by system administrators only
 router.post('/AdminLogin', adminLogIn);
+router.post('/AdminForgotPassword', adminForgotPassword);
 
 router.get("/Admin/:id", getAdminDetail)
 // router.delete("/Admin/:id", deleteAdmin)
@@ -47,13 +43,11 @@ router.get("/Admin/:id", getAdminDetail)
 
 router.post('/StudentReg', studentRegister);
 router.post('/StudentLogin', studentLogIn)
+router.post('/StudentForgotPassword', forgotPassword);
+router.post('/StudentResetPassword/:token', resetPassword);
 
 router.get("/Students/:id", getStudents)
 router.get("/Student/:id", getStudentDetail)
-// Student Forgot & Reset Password
-router.post('/StudentForgotPassword', forgotPassword); // send reset email
-router.put('/StudentResetPassword/:token', resetPassword); // reset password using token
-
 
 router.delete("/Students/:id", deleteStudents)
 router.delete("/StudentsClass/:id", deleteStudentsByClass)
@@ -74,7 +68,9 @@ router.put('/RemoveStudentAtten/:id', removeStudentAttendance)
 // Teacher
 
 router.post('/TeacherReg', teacherRegister);
-router.post('/TeacherLogin', teacherLogIn)
+router.post('/TeacherLogin', teacherLogIn);
+router.post('/TeacherForgotPassword', teacherForgotPassword);
+router.post('/TeacherResetPassword/:token', teacherResetPassword);
 
 router.get("/Teachers/:id", getTeachers)
 router.get("/Teacher/:id", getTeacherDetail)
@@ -89,14 +85,20 @@ router.post('/TeacherAttendance/:id', teacherAttendance)
 
 // Notice
 
-router.post('/NoticeCreate', noticeCreate);
+// Public routes (Students and Teachers can view)
+router.get('/NoticeList/:school', noticeList); // Get notices by school
+router.get('/NoticeList', noticeList); // Get all notices
+router.get('/Notice/:id', getNoticeDetail); // Get single notice
 
-router.get('/NoticeList/:id', noticeList);
+// Teacher and Admin routes (require teacher or admin authentication)
+router.post('/NoticeCreate', authenticateTeacherOrAdmin, noticeCreate); // Create notice
+router.get('/TeacherNotices', authenticateTeacherOrAdmin, getTeacherNotices); // Get teacher's/admin's notices
+router.put('/Notice/:id', authenticateTeacherOrAdmin, updateNotice); // Update notice
+router.delete('/Notice/:id', authenticateTeacherOrAdmin, deleteNotice); // Delete notice
+router.delete('/TeacherNotices', authenticateTeacherOrAdmin, deleteTeacherNotices); // Delete all teacher/admin notices
 
-router.delete("/Notices/:id", deleteNotices)
-router.delete("/Notice/:id", deleteNotice)
-
-router.put("/Notice/:id", updateNotice)
+// Admin routes
+router.delete("/Notices/:id", deleteNotices) // Delete all notices (admin)
 
 // Complain
 

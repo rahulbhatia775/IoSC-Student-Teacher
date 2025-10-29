@@ -43,7 +43,7 @@ const SubjectForm = () => {
     };
 
     const handleAddSubject = () => {
-        setSubjects([...subjects, { subName: "", subCode: "" }]);
+        setSubjects([...subjects, { subName: "", subCode: "", sessions: "" }]);
     };
 
     const handleRemoveSubject = (index) => () => {
@@ -65,7 +65,7 @@ const SubjectForm = () => {
     const submitHandler = (event) => {
         event.preventDefault();
         setLoader(true)
-        dispatch(addStuff(fields, address))
+        dispatch(addStuff({ fields, address }))
     };
 
     useEffect(() => {

@@ -11,13 +11,27 @@ const SeeNotice = () => {
     const { noticesList, loading, error, response } = useSelector((state) => state.notice);
 
     useEffect(() => {
-        if (currentRole === "Admin") {
+        if (process.env.NODE_ENV === 'development') {
+            console.log('🔍 SEE NOTICE DEBUG - Current User:', currentUser);
+            console.log('🔍 SEE NOTICE DEBUG - Current Role:', currentRole);
+        }
+        
+        if (currentUser && currentRole === "Admin") {
+            if (process.env.NODE_ENV === 'development') {
+                console.log('🔍 SEE NOTICE DEBUG - Admin: fetching notices for admin ID:', currentUser._id);
+            }
             dispatch(getAllNotices(currentUser._id, "Notice"));
         }
-        else {
-            dispatch(getAllNotices(currentUser.school._id, "Notice"));
+        else if (currentUser) {
+            if (process.env.NODE_ENV === 'development') {
+                console.log('🔍 SEE NOTICE DEBUG - Student/Teacher: fetching all notices');
+            }
+            // For students and teachers, fetch all notices (no school filtering for now)
+            dispatch(getAllNotices(null, "Notice"));
+        } else {
+            console.log('🚨 SEE NOTICE ERROR - No current user');
         }
-    }, [dispatch]);
+    }, [dispatch, currentUser, currentRole]);
 
     if (error) {
         console.log(error);
@@ -29,10 +43,7 @@ const SeeNotice = () => {
         { id: 'date', label: 'Date', minWidth: 170 },
     ];
 
-    // RIGHT (Checks if noticesList is an array first)
-    const noticeRows = Array.isArray(noticesList)
-    ? noticesList.map((notice) => {
-        // ... (rest of your map logic) ...
+    const noticeRows = Array.isArray(noticesList) ? noticesList.map((notice) => {
         const date = new Date(notice.date);
         const dateString = date.toString() !== "Invalid Date" ? date.toISOString().substring(0, 10) : "Invalid Date";
         return {
@@ -41,8 +52,7 @@ const SeeNotice = () => {
             date: dateString,
             id: notice._id,
         };
-        })
-    : []; // <-- If not an array, default to an empty array
+    }) : [];
     return (
         <div style={{ marginTop: '50px', marginRight: '20px' }}>
             {loading ? (

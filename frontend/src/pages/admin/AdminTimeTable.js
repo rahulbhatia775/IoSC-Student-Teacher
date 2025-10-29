@@ -146,7 +146,7 @@ const AdminTimeTable = () => {
     const fetchBatches = async () => {
         try {
             const response = await axios.get('http://localhost:5000/batches/');
-            console.log(response.data);
+            console.log(response.data.batches);
             setBatches(response.data.batches);
             if (response.data.batches.length > 0) {
                 setSelectedBatch(response.data.batches[0]);
@@ -580,7 +580,7 @@ const AdminTimeTable = () => {
                                 label="Select Batch"
                             >
                                 {batches.map((batch) => (
-                                    <MenuItem key={batch} value={batch}>
+                                    <MenuItem key={batch._id} value={batch}>
                                         {batch}
                                     </MenuItem>
                                 ))}

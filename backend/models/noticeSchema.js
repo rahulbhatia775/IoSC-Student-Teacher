@@ -11,13 +11,29 @@ const noticeSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
-        required: true
+        default: Date.now
     },
     school: {
+        type: mongoose.Schema.Types.Mixed, // Allow both ObjectId and String for flexibility
+        ref: 'admin'
+    },
+    teacher: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'teacher'
+    },
+    admin: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'admin'
     },
-
+    priority: {
+        type: String,
+        enum: ['low', 'medium', 'high'],
+        default: 'medium'
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model("notice", noticeSchema)
