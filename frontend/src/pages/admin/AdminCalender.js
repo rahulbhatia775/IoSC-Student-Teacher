@@ -34,8 +34,10 @@ import {
     Close as CloseIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
+import api from '../../api/axiosConfig';
 
 const AdminCalendar = () => {
+    // --- State and Logic (UNCHANGED) ---
     const [events, setEvents] = useState([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [editMode, setEditMode] = useState(false);
@@ -63,7 +65,7 @@ const AdminCalendar = () => {
     }, []);
 
     const fetchEvents = async () => {
-        axios.get("http://localhost:5000/Calender/")
+        api.get("Calender/")
             .then(res => {
                 setEvents(res.data.calender);
             })
@@ -109,14 +111,14 @@ const AdminCalendar = () => {
     const handleSubmit = async () => {
         try {
             if (editMode) {
-                await axios.put("http://localhost:5000/Calender/" , {id : currentEvent._id , date : currentEvent.date , type : currentEvent.type , title : currentEvent.title , description : currentEvent.description})
+                await api.put("Calender/" , {id : currentEvent._id , date : currentEvent.date , type : currentEvent.type , title : currentEvent.title , description : currentEvent.description})
                     .then(res => {
                         console.log(res);
                     })
                     .catch(err => console.error(err));
                 fetchEvents();
             } else {
-                const response = await axios.post('http://localhost:5000/Calender/', currentEvent);
+                const response = await api.post('Calender/', currentEvent);
                 setEvents([...events, response.data]);
                 showSnackbar('Event added successfully', 'success');
             }
@@ -143,7 +145,7 @@ const AdminCalendar = () => {
 
     const handleDeleteConfirm = async () => {
         try {
-            await axios.delete(`http://localhost:5000/Calender/${deleteConfirm.eventId}`);
+            await api.delete(`Calender/${deleteConfirm.eventId}`);
             setEvents(events.filter(e => e._id !== deleteConfirm.eventId));
             showSnackbar('Event deleted successfully', 'success');
         } catch (error) {
@@ -196,7 +198,8 @@ const AdminCalendar = () => {
         const days = [];
 
         for (let i = 0; i < firstDay; i++) {
-            days.push(<Box key={`empty-${i}`} sx={{ p: 2, border: '1px solid', borderColor: 'divider' }} />);
+            // Updated style for empty cells to match theme
+            days.push(<Box key={`empty-${i}`} sx={{ p: 2, border: '1px solid', borderColor: 'rgba(0,0,0,0.1)' }} />);
         }
 
         for (let day = 1; day <= daysInMonth; day++) {
@@ -212,12 +215,12 @@ const AdminCalendar = () => {
                         p: 1.5,
                         minHeight: '100px',
                         border: '1px solid',
-                        borderColor: 'divider',
-                        bgcolor: isToday ? 'action.selected' : 'background.paper',
+                        borderColor: 'rgba(0,0,0,0.1)', // Light border
+                        bgcolor: isToday ? '#e3f2fd' : 'background.paper', // Light blue background for today
                         cursor: 'pointer',
                         transition: 'all 0.2s',
                         '&:hover': {
-                            bgcolor: 'action.hover',
+                            bgcolor: isToday ? '#bbdefb' : 'grey.100', // Darker hover for today
                         },
                     }}
                 >
@@ -225,7 +228,7 @@ const AdminCalendar = () => {
                         variant="body2"
                         sx={{
                             fontWeight: isToday ? 'bold' : 'normal',
-                            color: isToday ? 'primary.main' : 'text.primary',
+                            color: isToday ? '#0f2b6e' : 'text.primary', // Dark text for date number
                             mb: 0.5,
                         }}
                     >
@@ -237,10 +240,14 @@ const AdminCalendar = () => {
                                 key={event._id}
                                 label={event.title}
                                 size="small"
+                                // Use theme colors for chips
                                 color={event.type === 'Holiday' ? 'error' : 'primary'}
                                 sx={{
                                     fontSize: '0.7rem',
                                     height: '20px',
+                                    backgroundColor: event.type === 'Holiday' ? '#e57373' : '#33A1FD', // Error/Primary shade
+                                    color: 'white',
+                                    fontWeight: 'bold',
                                     '& .MuiChip-label': {
                                         px: 1,
                                         overflow: 'hidden',
@@ -258,12 +265,13 @@ const AdminCalendar = () => {
     };
 
     const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
+    // --- End State and Logic (UNCHANGED) ---
 
     return (
         <Box>
             {/* Header */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#0f2b6e' }}>
                     Calendar Management
                 </Typography>
                 <Button
@@ -275,6 +283,10 @@ const AdminCalendar = () => {
                         px: 3,
                         py: 1,
                         borderRadius: 2,
+                        backgroundColor: '#2176FF', // Light Blue primary color
+                        '&:hover': {
+                            backgroundColor: '#0f2b6e', // Dark Blue hover
+                        },
                         boxShadow: 2,
                     }}
                 >
@@ -285,17 +297,31 @@ const AdminCalendar = () => {
             <Grid container spacing={3}>
                 {/* Calendar View */}
                 <Grid item xs={12} lg={8}>
-                    <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+                    <Paper elevation={4} sx={{ p: 3, borderRadius: 3, border: '1px solid #ddd' }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                            <IconButton onClick={handlePrevMonth} sx={{ bgcolor: 'action.hover' }}>
+                            <IconButton 
+                                onClick={handlePrevMonth} 
+                                sx={{ 
+                                    bgcolor: '#2176FF', 
+                                    color: 'white',
+                                    '&:hover': { bgcolor: '#0f2b6e' }
+                                }}
+                            >
                                 <ChevronLeft />
                             </IconButton>
 
-                            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                            <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#0f2b6e' }}>
                                 {months[currentDate.getMonth()]} {currentDate.getFullYear()}
                             </Typography>
 
-                            <IconButton onClick={handleNextMonth} sx={{ bgcolor: 'action.hover' }}>
+                            <IconButton 
+                                onClick={handleNextMonth} 
+                                sx={{ 
+                                    bgcolor: '#2176FF', 
+                                    color: 'white',
+                                    '&:hover': { bgcolor: '#0f2b6e' }
+                                }}
+                            >
                                 <ChevronRight />
                             </IconButton>
                         </Box>
@@ -307,9 +333,11 @@ const AdminCalendar = () => {
                                     variant="subtitle2"
                                     sx={{
                                         textAlign: 'center',
-                                        fontWeight: 'bold',
-                                        color: 'text.secondary',
+                                        fontWeight: '900',
+                                        color: '#0f2b6e', // Dark blue for day headers
                                         py: 1,
+                                        backgroundColor: '#e3f2fd', // Light background for headers
+                                        borderRadius: 1,
                                     }}
                                 >
                                     {day}
@@ -324,11 +352,11 @@ const AdminCalendar = () => {
                         <Box sx={{ mt: 3, display: 'flex', gap: 3, justifyContent: 'center' }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <Box sx={{ width: 16, height: 16, bgcolor: 'error.main', borderRadius: '50%' }} />
-                                <Typography variant="caption">Holiday</Typography>
+                                <Typography variant="caption" color="text.secondary">Holiday</Typography>
                             </Box>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Box sx={{ width: 16, height: 16, bgcolor: 'primary.main', borderRadius: '50%' }} />
-                                <Typography variant="caption">Event</Typography>
+                                <Box sx={{ width: 16, height: 16, bgcolor: '#2176FF', borderRadius: '50%' }} />
+                                <Typography variant="caption" color="text.secondary">Event</Typography>
                             </Box>
                         </Box>
                     </Paper>
@@ -336,34 +364,48 @@ const AdminCalendar = () => {
 
                 {/* Events List */}
                 <Grid item xs={12} lg={4}>
-                    <Paper elevation={2} sx={{ p: 3, borderRadius: 2, maxHeight: '800px', overflow: 'auto' }}>
-                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
+                    <Paper elevation={4} sx={{ p: 3, borderRadius: 3, maxHeight: '800px', overflowY: 'auto' }}>
+                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: '#0f2b6e' }}>
                             All Events & Holidays
                         </Typography>
 
                         {sortedEvents.length === 0 ? (
                             <Box sx={{ textAlign: 'center', py: 4 }}>
-                                <CalendarToday sx={{ fontSize: 60, color: 'text.disabled', mb: 2 }} />
+                                <CalendarToday sx={{ fontSize: 60, color: 'grey.400', mb: 2 }} />
                                 <Typography variant="body2" color="text.secondary">
-                                    No events added yet
+                                    No events added yet. Click 'Add Event' to start.
                                 </Typography>
                             </Box>
                         ) : (
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                 {sortedEvents.map((event) => (
-                                    <Card key={event._id} variant="outlined" sx={{ borderRadius: 2 }}>
+                                    <Card 
+                                        key={event._id} 
+                                        variant="outlined" 
+                                        sx={{ 
+                                            borderRadius: 2, 
+                                            borderLeft: `5px solid ${event.type === 'Holiday' ? '#e57373' : '#2176FF'}`, 
+                                            boxShadow: 1 
+                                        }}
+                                    >
                                         <CardContent sx={{ pb: 1 }}>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1rem', color: '#0f2b6e' }}>
                                                     {event.title}
                                                 </Typography>
                                                 <Chip
                                                     label={event.type}
                                                     size="small"
                                                     color={event.type === 'Holiday' ? 'error' : 'primary'}
+                                                    sx={{ 
+                                                        backgroundColor: event.type === 'Holiday' ? '#e57373' : '#33A1FD',
+                                                        color: 'white',
+                                                        fontWeight: 'bold',
+                                                    }}
                                                 />
                                             </Box>
                                             <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                                                <CalendarToday sx={{ fontSize: 12, mr: 0.5, verticalAlign: 'middle' }} />
                                                 {new Date(event.date).toLocaleDateString('en-US', {
                                                     weekday: 'long',
                                                     year: 'numeric',
@@ -379,7 +421,7 @@ const AdminCalendar = () => {
                                             <IconButton
                                                 size="small"
                                                 onClick={() => handleOpenDialog(event)}
-                                                sx={{ color: 'primary.main' }}
+                                                sx={{ color: '#2176FF' }}
                                             >
                                                 <EditIcon fontSize="small" />
                                             </IconButton>
@@ -406,14 +448,14 @@ const AdminCalendar = () => {
                 maxWidth="sm"
                 fullWidth
                 PaperProps={{
-                    sx: { borderRadius: 2 }
+                    sx: { borderRadius: 3 } // Rounded corners for dialog
                 }}
             >
-                <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: '#0f2b6e', color: 'white' }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                         {editMode ? 'Edit Event' : 'Add New Event'}
                     </Typography>
-                    <IconButton onClick={handleCloseDialog} size="small">
+                    <IconButton onClick={handleCloseDialog} size="small" sx={{ color: 'white' }}>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
@@ -467,14 +509,19 @@ const AdminCalendar = () => {
                     </Box>
                 </DialogContent>
                 <DialogActions sx={{ p: 2 }}>
-                    <Button onClick={handleCloseDialog} sx={{ textTransform: 'none' }}>
+                    <Button onClick={handleCloseDialog} sx={{ textTransform: 'none', color: '#0f2b6e' }}>
                         Cancel
                     </Button>
                     <Button
                         onClick={handleSubmit}
                         variant="contained"
                         disabled={!currentEvent.title || !currentEvent.date || !currentEvent.description}
-                        sx={{ textTransform: 'none', px: 3 }}
+                        sx={{ 
+                            textTransform: 'none', 
+                            px: 3, 
+                            backgroundColor: '#2176FF',
+                            '&:hover': { backgroundColor: '#0f2b6e' },
+                        }}
                     >
                         {editMode ? 'Update' : 'Add'}
                     </Button>
@@ -486,11 +533,11 @@ const AdminCalendar = () => {
                 open={deleteConfirm.open}
                 onClose={() => setDeleteConfirm({ open: false, eventId: null })}
                 PaperProps={{
-                    sx: { borderRadius: 2 }
+                    sx: { borderRadius: 3 }
                 }}
             >
-                <DialogTitle>Confirm Delete</DialogTitle>
-                <DialogContent>
+                <DialogTitle sx={{ bgcolor: 'error.dark', color: 'white' }}>Confirm Delete</DialogTitle>
+                <DialogContent sx={{ pt: 2 }}>
                     <Typography>
                         Are you sure you want to delete this event? This action cannot be undone.
                     </Typography>
