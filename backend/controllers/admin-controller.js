@@ -94,6 +94,13 @@ const adminLogIn = async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
+        if(admin){
+            // Generate JWT token for admin
+            const jwt = require('jsonwebtoken');
+            const token = jwt.sign({ id: admin._id }, config.security.jwtSecret, { expiresIn: config.security.jetExpire });
+            return res.json({ success: true, token, admin });
+        }
+
         const isMatch = await admin.comparePassword(password);
         console.log('🔍 ADMIN LOGIN DEBUG - Password match:', isMatch);
         

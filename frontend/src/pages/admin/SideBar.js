@@ -158,7 +158,10 @@ const SideBar = ({ open }) => {
   return (
     <Box
       sx={{
-        minHeight: "100%", 
+        // --- CHANGE APPLIED HERE ---
+        // Setting minHeight to '100vh' ensures the background fills the entire screen height, 
+        // which helps resolve coloring issues on mobile devices.
+        minHeight: "100vh", 
         py: 0, 
         background: "linear-gradient(135deg, #0d1b2a 80%, #1b263b 100%)",
         color: "#fff",
